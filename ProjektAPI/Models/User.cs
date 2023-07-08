@@ -2,6 +2,7 @@
 
 namespace ProjektAPI.Models
 {
+
     public class User
     {
         [Key]
@@ -11,16 +12,11 @@ namespace ProjektAPI.Models
         [Required] 
         public string Password { get; set; } = null!;
         [Required]
+        public string Email { get; set; } = null!;
+        [Required]
         public string FirstName { get; set; } = null!;
         [Required]
         public string LastName { get; set; } = null!;
-        public UserType UserType { get; set; }
+        public ICollection<Role> Roles { get; set; } = new HashSet<Role>();
     }
-
-    public enum UserType
-    {
-        Normal,
-        Admin
-    }
-
 }
