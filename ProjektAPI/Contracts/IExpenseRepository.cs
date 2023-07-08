@@ -1,6 +1,8 @@
-﻿namespace ProjektAPI.Contracts
+﻿using ProjektAPI.Models;
+
+namespace ProjektAPI.Contracts
 {
-    public interface IExpenseRepository
+    public interface IExpenseRepository : IGenericRepository<Expense>
     {
     }
 }
