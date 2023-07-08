@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.AccessControl;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -20,6 +21,7 @@ namespace ProjektAPI.Controllers
     {
         private readonly IUserRepository _repository;
         private readonly IMapper _mapper;
+        public static User me = new User();
 
         public UsersController(IMapper mapper, IUserRepository userRepository)
         {
@@ -41,9 +43,9 @@ namespace ProjektAPI.Controllers
         public async Task<ActionResult<UserDto>> GetUser(int id)
         {
             var user = await _repository.GetAsync(id);
-            if(user == null)
+            if (user == null)
             {
-                  return NotFound();
+                return NotFound();
             }
             return _mapper.Map<UserDto>(user);
         }
@@ -59,7 +61,7 @@ namespace ProjektAPI.Controllers
             }
 
             var user = await _repository.GetAsync(id);
-            if(user == null)
+            if (user == null)
             {
                 return NotFound();
             }
@@ -110,7 +112,7 @@ namespace ProjektAPI.Controllers
         {
             return await _repository.Exists(id);
         }
-      
+
 
         [Route("Register")]
         [HttpPost]
@@ -124,32 +126,28 @@ namespace ProjektAPI.Controllers
         }
         [Route("Login")]
         [HttpPost]
-        public async Task<IActionResult> Login(UserLoginRequestDto request)
+        public async Task<ActionResult<string>> Login(UserLoginRequestDto request)
         {
             var user = await _repository.GetUserByLogin(request);
-            if(user == null)
+            if (user == null)
             {
                 return BadRequest("User not found");
             }
 
-            if(!_repository.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+            if (!_repository.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
             {
                 return BadRequest("Password is incorrect.");
             }
-            return Ok($"Welcome back, {user.FirstName}!");
+            string token = _repository.GenerateToken(user);
+            return Ok(token);
         }
-
-        /*[Route("Login")]
-        [HttpPost]
-        public async Task<IActionResult> Login([FromBody]UserLogin userLogin)
+        [Route("GetMe")]
+        [HttpGet, Authorize]
+        public ActionResult<string> GetMe()
         {
-            var user = await _repository.Authenticate(userLogin);
-            if (user != null)
-            {
-                var token = await _repository.GenerateToken(user);
-                return Ok(token);
-            }
-            return NotFound("User not found.");
-        }*/
+            var userName = User?.Identity?.Name;
+            var role = User.FindFirstValue(ClaimTypes.Role);
+            return Ok(new { userName, role });
+        }
     }
 }

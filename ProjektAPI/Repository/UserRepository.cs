@@ -27,9 +27,9 @@ namespace ProjektAPI.Repository
             return await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
         }
 
-        public async Task<User> Register(UserRegisterRequestDto request)
+        public async Task<ActionResult<User>> Register(UserRegisterRequestDto request)
         {
-            if(_context.Users.Any(u => u.Email == request.Email))
+            if (_context.Users.Any(u => u.Email == request.Email))
             {
                 return null;
             }
@@ -71,35 +71,25 @@ namespace ProjektAPI.Repository
         {
             return Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
         }
-        /*public async Task<User> Authenticate(UserLogin user)
-{
-   User currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Login.ToLower() == user.Login.ToLower() && u.Password == user.Password);
 
-   if (currentUser != null)
-       return currentUser;
+        public string GenerateToken(User user)
+        {
+            var securitykey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var credentials = new SigningCredentials(securitykey, SecurityAlgorithms.HmacSha256);
 
-   return null;
-}
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, user.Email),
+                new Claim(ClaimTypes.GivenName, user.FirstName),
+                new Claim(ClaimTypes.Role, "User")
+            };
 
-public async Task<string> GenerateToken(User user)
-{
-   var securitykey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-   var credentials = new SigningCredentials(securitykey, SecurityAlgorithms.HmacSha256);
+            var token = new JwtSecurityToken(_config["Jwt:issuer"], _config["Jwt:Audience"], claims,
+                expires: DateTime.Now.AddMinutes(120),
+                signingCredentials: credentials);
 
-   var claims = new[]
-   {
-       new Claim(ClaimTypes.NameIdentifier, user.Login),
-       new Claim(ClaimTypes.Email, user.Email),
-       new Claim(ClaimTypes.GivenName, user.FirstName),
-       new Claim(ClaimTypes.Role, user.Role.Name)
-   };
-
-   var token = new JwtSecurityToken(_config["Jwt:issuer"], _config["Jwt:Audience"], claims,
-       expires: DateTime.Now.AddMinutes(15),
-       signingCredentials: credentials);
-
-   return new JwtSecurityTokenHandler().WriteToken(token);
-}*/
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
 
     }
 

@@ -21,6 +21,7 @@ namespace ProjektAPI.Controllers
         }
 
         [HttpGet(Name = "GetWeatherForecast")]
+        //[HttpGet(Name = "GetWeatherForecast"), Authorize(Roles="Admin")] JAK JU¯ BÊD¥ AKCJE DLA ADMINA
         public IEnumerable<WeatherForecast> Get()
         {
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
