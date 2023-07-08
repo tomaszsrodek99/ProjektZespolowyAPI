@@ -1,12 +1,21 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+
 namespace ProjektAPI
 {
     public class Program
     {
+        public IConfiguration? Configuration { get; }
         public static void Main(string[] args)
         {
+
+
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("connectionString")));
 
             // Add services to the container.
+
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
