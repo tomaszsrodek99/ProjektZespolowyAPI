@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ProjektAPI.Configuration;
 using ProjektAPI.Models;
 
 public class AppDbContext : DbContext
@@ -13,7 +14,7 @@ public class AppDbContext : DbContext
     }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=HomeExpensesAppDB;Trusted_Connection=True;",
+        optionsBuilder.UseSqlServer("Data Source=tcp:homeexpensesappdbdbserver.database.windows.net,1433;Initial Catalog=HomeExpensesAppDB;User Id=DbAdmin@homeexpensesappdbdbserver;Password=P@$$w0rd",
                 x => x.MigrationsHistoryTable("__EFMigrationsHistory", "Identity"));
     }
 }
