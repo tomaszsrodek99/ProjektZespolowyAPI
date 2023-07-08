@@ -110,6 +110,34 @@ namespace ProjektAPI.Controllers
         {
             return await _repository.Exists(id);
         }
+      
+
+        [Route("Register")]
+        [HttpPost]
+        public async Task<IActionResult> Register(UserRegisterRequestDto request)
+        {
+            var user = await _repository.Register(request);
+            if (user == null)
+                return BadRequest("User already exists");
+            else
+                return Ok("User successfully created!");
+        }
+        [Route("Login")]
+        [HttpPost]
+        public async Task<IActionResult> Login(UserLoginRequestDto request)
+        {
+            var user = await _repository.GetUserByLogin(request);
+            if(user == null)
+            {
+                return BadRequest("User not found");
+            }
+
+            if(!_repository.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+            {
+                return BadRequest("Password is incorrect.");
+            }
+            return Ok($"Welcome back, {user.FirstName}!");
+        }
 
         /*[Route("Login")]
         [HttpPost]
@@ -123,16 +151,5 @@ namespace ProjektAPI.Controllers
             }
             return NotFound("User not found.");
         }*/
-
-        [Route("Register")]
-        [HttpPost]
-        public async Task<IActionResult> Register(UserRegisterRequestDto request)
-        {
-            var user = await _repository.Register(request);
-            if (user == null)
-                return BadRequest("User already exists");
-            else
-                return Ok("User successfully created!");
-        }
     }
 }

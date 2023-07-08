@@ -16,12 +16,7 @@ namespace ProjektAPI.Models
         public string FirstName { get; set; } = null!;
         [Required]
         public string LastName { get; set; } = null!;
-        [Required]
-        public int RoleId { get; set; }
-        public Role Role { get; set; } = null!;
-        public string? VerificationToken { get; set; }
-        public DateTime? VerifiedAt { get; set; }
-        public string? PasswordResetToken { get; set; }
-        public DateTime? ResetTokenExpires { get; set; }
+        public int? RoleId { get; set; }
+        public Role? Role { get; set; }
     }
 }

@@ -22,6 +22,11 @@ namespace ProjektAPI.Repository
             _config = configuration;
         }
 
+        public async Task<User> GetUserByLogin(UserLoginRequestDto request)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+        }
+
         public async Task<User> Register(UserRegisterRequestDto request)
         {
             if(_context.Users.Any(u => u.Email == request.Email))
@@ -39,8 +44,7 @@ namespace ProjektAPI.Repository
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
                 FirstName = request.FirstName,
-                LastName = request.LastName,
-                VerificationToken = CreateRandomToken()
+                LastName = request.LastName
             };
 
             _context.Users.Add(user);
@@ -53,6 +57,14 @@ namespace ProjektAPI.Repository
             {
                 passwordSalt = hmac.Key;
                 passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+            }
+        }
+        public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+        {
+            using (var hmac = new HMACSHA512(passwordSalt))
+            {
+                var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return computedHash.SequenceEqual(passwordHash);
             }
         }
         private string CreateRandomToken()
