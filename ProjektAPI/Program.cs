@@ -1,18 +1,18 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using ProjektAPI.Configuration;
-using ProjektAPI.Contracts;
+using Microsoft.IdentityModel.Tokens;
 using ProjektAPI.Dtos;
 using ProjektAPI.Models;
 using ProjektAPI.Repository;
 using ProjektAPI.Services;
+using System.Text;
 
 namespace ProjektAPI
 {
     public class Program
     {
-        public IConfiguration? Configuration { get; }
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -20,7 +20,19 @@ namespace ProjektAPI
                 options.UseSqlServer(builder.Configuration.GetConnectionString("connectionString")));
 
             // Add services to the container.
-
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options => {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                        ValidAudience = builder.Configuration["Jwt:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+                    };
+                });
             builder.Services.AddScoped<UserService>();
 
             builder.Services.AddAutoMapper(typeof(MapperConfig));
