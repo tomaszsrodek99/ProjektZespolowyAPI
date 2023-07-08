@@ -7,16 +7,21 @@ namespace ProjektAPI.Models
     {
         [Key]
         public int UserId { get; set; }
-        [Required]
-        public string Login { get; set; } = null!;
         [Required] 
-        public string Password { get; set; } = null!;
+        public byte[] PasswordHash { get; set; } = new byte[32];
+        public byte[] PasswordSalt { get; set; } = new byte[32];
         [Required]
         public string Email { get; set; } = null!;
         [Required]
         public string FirstName { get; set; } = null!;
         [Required]
         public string LastName { get; set; } = null!;
-        public ICollection<Role> Roles { get; set; } = new HashSet<Role>();
+        [Required]
+        public int RoleId { get; set; }
+        public Role Role { get; set; } = null!;
+        public string? VerificationToken { get; set; }
+        public DateTime? VerifiedAt { get; set; }
+        public string? PasswordResetToken { get; set; }
+        public DateTime? ResetTokenExpires { get; set; }
     }
 }

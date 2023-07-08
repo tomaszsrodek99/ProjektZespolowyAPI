@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.AccessControl;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -108,6 +109,30 @@ namespace ProjektAPI.Controllers
         private async Task<bool> UserExists(int id)
         {
             return await _repository.Exists(id);
+        }
+
+        /*[Route("Login")]
+        [HttpPost]
+        public async Task<IActionResult> Login([FromBody]UserLogin userLogin)
+        {
+            var user = await _repository.Authenticate(userLogin);
+            if (user != null)
+            {
+                var token = await _repository.GenerateToken(user);
+                return Ok(token);
+            }
+            return NotFound("User not found.");
+        }*/
+
+        [Route("Register")]
+        [HttpPost]
+        public async Task<IActionResult> Register(UserRegisterRequestDto request)
+        {
+            var user = await _repository.Register(request);
+            if (user == null)
+                return BadRequest("User already exists");
+            else
+                return Ok("User successfully created!");
         }
     }
 }

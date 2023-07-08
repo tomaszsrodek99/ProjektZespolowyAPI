@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ProjektAPI.Dtos
 {
+    // Do zmiany klasa
     public class UserDto
     {
         public int UserId { get; set; }
@@ -28,7 +29,6 @@ namespace ProjektAPI.Dtos
         [MinLength(2)]
         [MaxLength(64)]
         [Required]
-        public string LastName { get; set; } = null!;
-        public ICollection<Role> Roles { get; set; } = new HashSet<Role>();
+        public string? LastName { get; set; } = null!;
     }
 }

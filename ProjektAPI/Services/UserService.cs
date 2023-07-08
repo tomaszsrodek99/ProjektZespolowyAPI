@@ -12,9 +12,9 @@ namespace ProjektAPI.Services
             _dbContext = dbContext;
             _mapper = mapper;
         }
-        public async Task<bool> CheckIfUserExists(string login)
+        public async Task<bool> CheckIfUserExists(string email)
         {
-            var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.Login == login);
+            var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.Email == email);
             return user != null;
         }
     }
