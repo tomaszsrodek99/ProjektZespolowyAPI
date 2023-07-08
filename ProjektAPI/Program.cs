@@ -33,6 +33,7 @@ namespace ProjektAPI
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
                     };
                 });
+            builder.Services.AddMvc();
             builder.Services.AddScoped<UserService>();
 
             builder.Services.AddAutoMapper(typeof(MapperConfig));
@@ -60,6 +61,10 @@ namespace ProjektAPI
 
             app.UseAuthorization();
 
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
 
             app.MapControllers();
 
