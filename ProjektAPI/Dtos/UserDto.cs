@@ -5,7 +5,7 @@ namespace ProjektAPI.Dtos
 {
     public class UserDto
     {
-        public Guid Id { get; set; }
+        public int UserId { get; set; }
 
         [MaxLength(128)]
         [Required]

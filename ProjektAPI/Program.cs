@@ -1,8 +1,11 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using ProjektAPI.Configuration;
+using ProjektAPI.Contracts;
 using ProjektAPI.Dtos;
 using ProjektAPI.Models;
+using ProjektAPI.Repository;
 using ProjektAPI.Services;
 
 namespace ProjektAPI
@@ -20,11 +23,7 @@ namespace ProjektAPI
 
             builder.Services.AddScoped<UserService>();
 
-            var mapperConfig = new MapperConfiguration(config =>
-            {
-                config.CreateMap<User, UserDto>();
-                config.CreateMap<UserDto, User>();
-            });
+            builder.Services.AddAutoMapper(typeof(MapperConfig));
             builder.Services.AddAutoMapper(typeof(Program));
 
             builder.Services.AddControllers();
@@ -33,6 +32,7 @@ namespace ProjektAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
