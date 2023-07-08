@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using ProjektAPI.Configuration;
+using ProjektAPI.Contracts;
 using ProjektAPI.Dtos;
 using ProjektAPI.Models;
 using ProjektAPI.Repository;
@@ -60,11 +62,6 @@ namespace ProjektAPI
             app.UseAuthentication();
 
             app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
 
             app.MapControllers();
 
