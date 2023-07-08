@@ -1,14 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ProjektAPI.Models
+namespace ProjektAPI.Dtos
 {
-    public class Role
+    public class RoleDto
     {
         [Key]
         public int RoleId { get; set; }
         [Required]
         public string Name { get; set; } = null!;
         public string Description { get; set; } = null!;
-        public ICollection<User> Users { get; set;} = new HashSet<User>();
+        public ICollection<UserDto> Users { get; set; } 
     }
 }
