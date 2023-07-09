@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ProjektAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230709122633_init5")]
-    partial class init5
+    [Migration("20230709124137_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

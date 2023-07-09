@@ -49,8 +49,7 @@ namespace ProjektAPI.Repository
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
                 FirstName = request.FirstName,
-                LastName = request.LastName,
-                RoleId = 1
+                LastName = request.LastName
             };
 
             _context.Users.Add(user);
