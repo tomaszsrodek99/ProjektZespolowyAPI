@@ -6,6 +6,9 @@ namespace ProjektAPI.Configuration
     {
         public MapperConfig()
         {
+            CreateMap<Models.Category, Dtos.CategoryDto>().ReverseMap();
+            CreateMap<Models.Expense, Dtos.ExpenseDto>().ReverseMap();
+            CreateMap<Models.Role, Dtos.RoleDto>().ReverseMap();
             CreateMap<Models.User, Dtos.UserDto>().ReverseMap();
         }
     }
