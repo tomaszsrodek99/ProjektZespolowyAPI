@@ -4,10 +4,10 @@ namespace ProjektAPI.Dtos
 {
     public class RoleDto
     {
-        [Key]
         public int RoleId { get; set; }
         [Required]
         public string Name { get; set; } = null!;
+        [Required]
         public string Description { get; set; } = null!;
         public ICollection<UserDto> Users { get; set; } 
     }
