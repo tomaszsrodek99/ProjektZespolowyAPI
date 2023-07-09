@@ -26,6 +26,11 @@ namespace ProjektAPI.Repository
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
         }
+        public async Task<List<User>> GetUsersByRoleId(int roleId)
+        {
+            return await _context.Users.Where(u => u.RoleId == roleId).ToListAsync();
+        }
+
 
         public async Task<ActionResult<User>> Register(UserRegisterRequestDto request)
         {
@@ -44,7 +49,8 @@ namespace ProjektAPI.Repository
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
                 FirstName = request.FirstName,
-                LastName = request.LastName
+                LastName = request.LastName,
+                RoleId = 1
             };
 
             _context.Users.Add(user);
@@ -67,10 +73,10 @@ namespace ProjektAPI.Repository
                 return computedHash.SequenceEqual(passwordHash);
             }
         }
-        private string CreateRandomToken()
+        /* private string CreateRandomToken()
         {
             return Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
-        }
+        } */
 
         public string GenerateToken(User user)
         {
@@ -81,7 +87,7 @@ namespace ProjektAPI.Repository
             {
                 new Claim(ClaimTypes.Name, user.Email),
                 new Claim(ClaimTypes.GivenName, user.FirstName),
-                new Claim(ClaimTypes.Role, "User")
+                new Claim(ClaimTypes.Role, user.Role.Name)
             };
 
             var token = new JwtSecurityToken(_config["Jwt:issuer"], _config["Jwt:Audience"], claims,

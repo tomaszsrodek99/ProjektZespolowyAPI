@@ -17,12 +17,14 @@ namespace ProjektAPI.Controllers
     public class RolesController : ControllerBase
     {
         private readonly IRoleRepository _repository;
+        private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
 
-        public RolesController(IMapper mapper, IRoleRepository roleRepository)
+        public RolesController(IMapper mapper, IRoleRepository roleRepository, IUserRepository userRepository)
         {
             _mapper = mapper;
             _repository = roleRepository;
+            _userRepository = userRepository;
         }
 
         // GET: api/Roles
@@ -33,6 +35,34 @@ namespace ProjektAPI.Controllers
             var records = _mapper.Map<List<RoleDto>>(roles);
             return Ok(records);
         }
+        // GET: api/RolesWithUsers
+        [Route("RoleWithUsers")]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<RoleWithUsersDto>>> GetRoleWithUsers()
+        {
+            var roles = await _repository.GetAllAsync();
+            var roleDtos = _mapper.Map<List<RoleDto>>(roles);
+            var roleWithUsersDtos = new List<RoleWithUsersDto>();
+
+            foreach (var roleDto in roleDtos)
+            {
+                var users = await _userRepository.GetUsersByRoleId(roleDto.RoleId);
+                var userDtos = _mapper.Map<List<UserDto>>(users);
+
+                var roleWithUsersDto = new RoleWithUsersDto
+                {
+                    RoleId = roleDto.RoleId,
+                    Name = roleDto.Name,
+                    Description = roleDto.Description,
+                    Users = userDtos
+                };
+
+                roleWithUsersDtos.Add(roleWithUsersDto);
+            }
+
+            return Ok(roleWithUsersDtos);
+        }
+
 
         // GET: api/Roles/5
         [HttpGet("{id}")]

@@ -11,5 +11,6 @@ namespace ProjektAPI.Contracts
         public Task<ActionResult<User>> Register(UserRegisterRequestDto request);
         public Task<User> GetUserByLogin(UserLoginRequestDto request);
         public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt);
+        public Task<List<User>> GetUsersByRoleId(int roleId);
     }
 }

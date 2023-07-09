@@ -9,7 +9,6 @@ using ProjektAPI.Contracts;
 using ProjektAPI.Dtos;
 using ProjektAPI.Models;
 using ProjektAPI.Repository;
-using ProjektAPI.Services;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 
@@ -39,12 +38,11 @@ namespace ProjektAPI
                     };
                 });
             builder.Services.AddMvc();
-            builder.Services.AddScoped<UserService>();
 
             builder.Services.AddAutoMapper(typeof(MapperConfig));
             builder.Services.AddAutoMapper(typeof(Program));
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllersWithViews();
 
             builder.Services.AddCors(options =>
             {

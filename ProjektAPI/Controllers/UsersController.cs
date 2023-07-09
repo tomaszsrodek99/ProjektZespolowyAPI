@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using ProjektAPI.Contracts;
 using ProjektAPI.Dtos;
 using ProjektAPI.Models;
+using ProjektAPI.Repository;
 
 namespace ProjektAPI.Controllers
 {
@@ -20,13 +21,15 @@ namespace ProjektAPI.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserRepository _repository;
+        private readonly IRoleRepository _roleRepository;
         private readonly IMapper _mapper;
         public static User me = new User();
 
-        public UsersController(IMapper mapper, IUserRepository userRepository)
+        public UsersController(IMapper mapper, IUserRepository userRepository, IRoleRepository roleRepository)
         {
             _mapper = mapper;
             _repository = userRepository;
+            _roleRepository = roleRepository;
         }
 
         // GET: api/Users
@@ -35,6 +38,14 @@ namespace ProjektAPI.Controllers
         {
             var users = await _repository.GetAllAsync();
             var records = _mapper.Map<List<UserDto>>(users);
+
+            foreach (var user in records)
+            {
+                var role = await _roleRepository.GetRoleByUserId(user.RoleId);
+                var roleDto = _mapper.Map<RoleDto>(role);
+                user.Role = roleDto;
+            }
+
             return Ok(records);
         }
 
