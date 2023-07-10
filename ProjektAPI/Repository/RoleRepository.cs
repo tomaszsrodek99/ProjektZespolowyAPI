@@ -11,7 +11,7 @@ namespace ProjektAPI.Repository
         {
             _context = context;
         }
-        public async Task<Role> GetRoleByUserId(int roleId)
+        public async Task<Role?> GetRoleByUserId(int? roleId)
         {
             return await _context.Roles.FirstOrDefaultAsync(u => u.RoleId == roleId);
         }

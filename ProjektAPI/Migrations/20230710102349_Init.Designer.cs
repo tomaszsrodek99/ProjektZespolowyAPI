@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ProjektAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230709124137_Init")]
+    [Migration("20230710102349_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -126,7 +126,7 @@ namespace ProjektAPI.Migrations
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<int>("RoleId")
+                    b.Property<int?>("RoleId")
                         .HasColumnType("int");
 
                     b.HasKey("UserId");
@@ -157,13 +157,9 @@ namespace ProjektAPI.Migrations
 
             modelBuilder.Entity("ProjektAPI.Models.User", b =>
                 {
-                    b.HasOne("ProjektAPI.Models.Role", "Role")
+                    b.HasOne("ProjektAPI.Models.Role", null)
                         .WithMany("Users")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Role");
+                        .HasForeignKey("RoleId");
                 });
 
             modelBuilder.Entity("ProjektAPI.Models.Role", b =>

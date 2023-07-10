@@ -9,7 +9,7 @@ namespace ProjektAPI.Contracts
         //public Task<User> Authenticate(UserLogin user);
         public string GenerateToken(User user);
         public Task<ActionResult<User>> Register(UserRegisterRequestDto request);
-        public Task<User> GetUserByLogin(UserLoginRequestDto request);
+        public Task<User?> GetUserByLogin(string request);
         public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt);
         public Task<List<User>> GetUsersByRoleId(int roleId);
     }

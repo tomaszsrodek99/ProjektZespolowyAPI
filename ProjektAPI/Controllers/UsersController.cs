@@ -42,8 +42,7 @@ namespace ProjektAPI.Controllers
             foreach (var user in records)
             {
                 var role = await _roleRepository.GetRoleByUserId(user.RoleId);
-                var roleDto = _mapper.Map<RoleDto>(role);
-                user.Role = roleDto;
+                user.RoleId = role.RoleId;
             }
 
             return Ok(records);
@@ -137,15 +136,16 @@ namespace ProjektAPI.Controllers
         }
         [Route("Login")]
         [HttpPost]
-        public async Task<ActionResult<string>> Login(UserLoginRequestDto request)
+        public async Task<IActionResult> Login(UserLoginRequestDto request)
         {
-            var user = await _repository.GetUserByLogin(request);
+            var user = await _repository.GetUserByLogin(request.Email);
             if (user == null)
             {
-                return BadRequest("User not found");
+                return BadRequest("User not found.");
             }
 
-            if (!_repository.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+            var decision = _repository.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt);
+            if (!decision)
             {
                 return BadRequest("Password is incorrect.");
             }

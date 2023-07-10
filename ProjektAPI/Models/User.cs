@@ -16,7 +16,6 @@ namespace ProjektAPI.Models
         public string FirstName { get; set; } = null!;
         [Required]
         public string LastName { get; set; } = null!;
-        public int? RoleId { get; set; }
-        public Role? Role { get; set; }
+        public int RoleId { get; set; }
     }
 }
