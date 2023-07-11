@@ -28,10 +28,9 @@ namespace ProjektAPI
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
                         ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
                         ValidIssuer = builder.Configuration["Jwt:Issuer"],
                         ValidAudience = builder.Configuration["Jwt:Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
@@ -76,8 +75,8 @@ namespace ProjektAPI
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                //app.UseSwagger();
-                //app.UseSwaggerUI();
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
             //moved to test Azure
             app.UseSwagger();
@@ -86,7 +85,7 @@ namespace ProjektAPI
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
-
+            app.UseJwtAuthorization();
             app.UseAuthorization();
 
             app.UseCors("AllowAll");

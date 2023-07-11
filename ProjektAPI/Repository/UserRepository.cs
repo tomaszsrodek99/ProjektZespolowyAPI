@@ -76,21 +76,26 @@ namespace ProjektAPI.Repository
 
         public string GenerateToken(User user)
         {
-            var securitykey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var credentials = new SigningCredentials(securitykey, SecurityAlgorithms.HmacSha256);
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            var claims = new[]
-            {
-        new Claim(ClaimTypes.Email, user.Email),
-        new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-        new Claim(ClaimTypes.Role, user.Role) // Przekazuje wartość roli jako string
-    };
+            var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Role, user.Role)
+        };
 
-            var token = new JwtSecurityToken(_config["Jwt:issuer"], _config["Jwt:Audience"], claims,
+            var tokenOptions = new JwtSecurityToken(
+                _config["Jwt:Issuer"],
+                _config["Jwt:Audience"],
+                claims,
                 expires: DateTime.Now.AddMinutes(120),
-                signingCredentials: credentials);
+                signingCredentials: credentials
+            );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+            return token;
         }
     }
 

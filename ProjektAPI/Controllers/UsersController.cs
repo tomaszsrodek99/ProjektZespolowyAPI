@@ -128,7 +128,7 @@ namespace ProjektAPI.Controllers
         }
         [Route("Login")]
         [HttpPost]
-        public async Task<IActionResult> Login([FromBody]UserLoginRequestDto request)
+        public async Task<IActionResult> Login(UserLoginRequestDto request)
         {
             var user = await _repository.GetUserByLogin(request.Email);
             if (user == null)
@@ -136,14 +136,13 @@ namespace ProjektAPI.Controllers
                 return BadRequest("User not found.");
             }
 
-            var decision = _repository.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt);
-            if (!decision)
+            var passwordValid = _repository.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt);
+            if (!passwordValid)
             {
-                return BadRequest("Password is incorrect.");
+                return BadRequest("Invalid credentials");
             }
 
             string token = _repository.GenerateToken(user);
-            HttpContext.Response.Headers.Add("Authorization", $"bearer {token}");
             return Ok(token);
         }       
     }
