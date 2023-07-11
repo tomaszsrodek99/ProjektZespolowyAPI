@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ProjektAPI.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace ProjektAPI.Dtos
 {
@@ -12,8 +13,14 @@ namespace ProjektAPI.Dtos
         [Required]
         public decimal Price { get; set; }
         [Required]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime Date { get; set; }
-        public int CategoryId { get; set; }
+        [Required]
         public int UserId { get; set; }
+        public UserDto? User { get; set; }
+        public int? PrivateCategoryId { get; set; }
+        public PrivateCategoryDto? PrivateCategory { get; set; }
+        public int? CategoryId { get; set; }
+        public CategoryDto? Category { get; set; }
     }
 }

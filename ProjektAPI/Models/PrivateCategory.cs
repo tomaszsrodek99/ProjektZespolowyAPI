@@ -2,12 +2,14 @@
 
 namespace ProjektAPI.Models
 {
-    public class Category
+    public class PrivateCategory
     {
         [Key]
-        public int CategoryId { get; set; }
+        public int PrivateCategoryId { get; set; }
         [Required]
         public string Name { get; set; } = null!;
+        [Required]
+        public int UserId { get; set; }
         public string? Icon { get; set; }
         public string? Color { get; set; }
     }

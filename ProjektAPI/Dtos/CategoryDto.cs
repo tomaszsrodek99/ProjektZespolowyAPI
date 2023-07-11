@@ -7,5 +7,7 @@ namespace ProjektAPI.Dtos
         public int CategoryId { get; set; }
         [Required]
         public string Name { get; set; } = null!;
+        public string? Icon { get; set; }
+        public string? Color { get; set; }
     }
 }

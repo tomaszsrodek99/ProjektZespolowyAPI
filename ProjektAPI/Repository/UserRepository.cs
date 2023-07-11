@@ -87,7 +87,8 @@ namespace ProjektAPI.Repository
             {
                 new Claim(ClaimTypes.Name, user.Email),
                 new Claim(ClaimTypes.GivenName, user.FirstName),
-                new Claim(ClaimTypes.Role, user.RoleId.ToString())
+                new Claim(ClaimTypes.Role, user.RoleId.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString())
             };
 
             var token = new JwtSecurityToken(_config["Jwt:issuer"], _config["Jwt:Audience"], claims,

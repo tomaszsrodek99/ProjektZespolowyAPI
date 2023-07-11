@@ -157,8 +157,10 @@ namespace ProjektAPI.Controllers
         public ActionResult<string> GetMe()
         {
             var userName = User?.Identity?.Name;
+            var userId = User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             var role = User.FindFirstValue(ClaimTypes.Role);
-            return Ok(new { userName, role });
+            return Ok(new { userName, userId, role });
         }
+
     }
 }

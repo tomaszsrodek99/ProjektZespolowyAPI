@@ -17,10 +17,12 @@ namespace ProjektAPI.Models
         [Required]
         public decimal Price { get; set; }
         [Required]
-        public DateTime Date { get; set; } 
-        public int CategoryId { get; set; } 
-        public Category Category { get; set; }
+        public DateTime Date { get; set; }
         public int UserId { get; set; }
-        public User User { get; set; }
+        public User User { get; set; } = null!;
+        public int? PrivateCategoryId { get; set; }
+        public PrivateCategory? PrivateCategory { get; set; }
+        public int? CategoryId { get; set; } 
+        public Category? Category { get; set; }
     }
 }
