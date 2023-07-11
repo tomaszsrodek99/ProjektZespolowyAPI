@@ -22,7 +22,6 @@ namespace ProjektAPI.Controllers
     {
         private readonly IUserRepository _repository;
         private readonly IMapper _mapper;
-        public static User me = new User();
 
         public UsersController(IMapper mapper, IUserRepository userRepository)
         {
