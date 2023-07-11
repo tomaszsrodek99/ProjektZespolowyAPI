@@ -57,7 +57,7 @@ namespace ProjektAPI
             // builder.Services.AddSwaggerGen(); przywróciæ jakby coœ siê wysypa³o i zakomentowaæ to ni¿ej
             builder.Services.AddSwaggerGen(options =>
             {
-                options.AddSecurityDefinition("oauth2", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
                 {
                     Description = "Standard Autohrization header using the Bearer scheme (\"baerer {token}\")",
                     In = ParameterLocation.Header,
@@ -70,7 +70,6 @@ namespace ProjektAPI
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
-            builder.Services.AddScoped<IRoleRepository, RoleRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             var app = builder.Build();
 
