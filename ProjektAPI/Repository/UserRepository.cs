@@ -26,9 +26,9 @@ namespace ProjektAPI.Repository
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Email == request);
         }
-        public async Task<List<User>> GetUsersByRoleId(int roleId)
+        public async Task<List<User>> GetUsersByRoleId(string role)
         {
-            return await _context.Users.Where(u => u.RoleId == roleId).ToListAsync();
+            return await _context.Users.Where(u => u.Role == role).ToListAsync();
         }
 
 
@@ -50,7 +50,7 @@ namespace ProjektAPI.Repository
                 PasswordSalt = passwordSalt,
                 FirstName = request.FirstName,
                 LastName = request.LastName,
-                RoleId = await _context.Roles.Where(r => r.Name == "User").Select(r => r.RoleId).FirstOrDefaultAsync()          
+                Role = "User"
             };
 
             _context.Users.Add(user);
@@ -73,31 +73,30 @@ namespace ProjektAPI.Repository
                 return computedHash.SequenceEqual(passwordHash);
             }
         }
-        /* private string CreateRandomToken()
-        {
-            return Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
-        } */
 
         public string GenerateToken(User user)
         {
-            var securitykey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var credentials = new SigningCredentials(securitykey, SecurityAlgorithms.HmacSha256);
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.Name, user.Email),
-                new Claim(ClaimTypes.GivenName, user.FirstName),
-                new Claim(ClaimTypes.Role, user.RoleId.ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString())
-            };
+            var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Role, user.Role)
+        };
 
-            var token = new JwtSecurityToken(_config["Jwt:issuer"], _config["Jwt:Audience"], claims,
+            var tokenOptions = new JwtSecurityToken(
+                _config["Jwt:Issuer"],
+                _config["Jwt:Audience"],
+                claims,
                 expires: DateTime.Now.AddMinutes(120),
-                signingCredentials: credentials);
+                signingCredentials: credentials
+            );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+            return token;
         }
-
     }
 
 }

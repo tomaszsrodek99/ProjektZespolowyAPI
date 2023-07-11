@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ProjektAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230710102349_Init")]
+    [Migration("20230711112858_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,6 +31,12 @@ namespace ProjektAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryId"), 1L, 1);
 
+                    b.Property<string>("Color")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Icon")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -48,7 +54,7 @@ namespace ProjektAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ExpenseId"), 1L, 1);
 
-                    b.Property<int>("CategoryId")
+                    b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
@@ -65,6 +71,9 @@ namespace ProjektAPI.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(5,2)");
 
+                    b.Property<int?>("PrivateCategoryId")
+                        .HasColumnType("int");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
@@ -72,30 +81,37 @@ namespace ProjektAPI.Migrations
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("PrivateCategoryId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Expenses");
                 });
 
-            modelBuilder.Entity("ProjektAPI.Models.Role", b =>
+            modelBuilder.Entity("ProjektAPI.Models.PrivateCategory", b =>
                 {
-                    b.Property<int>("RoleId")
+                    b.Property<int>("PrivateCategoryId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoleId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PrivateCategoryId"), 1L, 1);
 
-                    b.Property<string>("Description")
-                        .IsRequired()
+                    b.Property<string>("Color")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Icon")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("RoleId");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
-                    b.ToTable("Roles");
+                    b.HasKey("PrivateCategoryId");
+
+                    b.ToTable("PrivateCategory");
                 });
 
             modelBuilder.Entity("ProjektAPI.Models.User", b =>
@@ -126,12 +142,11 @@ namespace ProjektAPI.Migrations
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<int?>("RoleId")
-                        .HasColumnType("int");
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId");
-
-                    b.HasIndex("RoleId");
 
                     b.ToTable("Users");
                 });
@@ -140,9 +155,11 @@ namespace ProjektAPI.Migrations
                 {
                     b.HasOne("ProjektAPI.Models.Category", "Category")
                         .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CategoryId");
+
+                    b.HasOne("ProjektAPI.Models.PrivateCategory", "PrivateCategory")
+                        .WithMany()
+                        .HasForeignKey("PrivateCategoryId");
 
                     b.HasOne("ProjektAPI.Models.User", "User")
                         .WithMany()
@@ -152,19 +169,9 @@ namespace ProjektAPI.Migrations
 
                     b.Navigation("Category");
 
+                    b.Navigation("PrivateCategory");
+
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ProjektAPI.Models.User", b =>
-                {
-                    b.HasOne("ProjektAPI.Models.Role", null)
-                        .WithMany("Users")
-                        .HasForeignKey("RoleId");
-                });
-
-            modelBuilder.Entity("ProjektAPI.Models.Role", b =>
-                {
-                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

@@ -21,15 +21,13 @@ namespace ProjektAPI.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserRepository _repository;
-        private readonly IRoleRepository _roleRepository;
         private readonly IMapper _mapper;
         public static User me = new User();
 
-        public UsersController(IMapper mapper, IUserRepository userRepository, IRoleRepository roleRepository)
+        public UsersController(IMapper mapper, IUserRepository userRepository)
         {
             _mapper = mapper;
             _repository = userRepository;
-            _roleRepository = roleRepository;
         }
 
         // GET: api/Users
@@ -38,12 +36,6 @@ namespace ProjektAPI.Controllers
         {
             var users = await _repository.GetAllAsync();
             var records = _mapper.Map<List<UserDto>>(users);
-
-            foreach (var user in records)
-            {
-                var role = await _roleRepository.GetRoleByUserId(user.RoleId);
-                user.RoleId = role.RoleId;
-            }
 
             return Ok(records);
         }
@@ -144,23 +136,14 @@ namespace ProjektAPI.Controllers
                 return BadRequest("User not found.");
             }
 
-            var decision = _repository.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt);
-            if (!decision)
+            var passwordValid = _repository.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt);
+            if (!passwordValid)
             {
-                return BadRequest("Password is incorrect.");
+                return BadRequest("Invalid credentials");
             }
+
             string token = _repository.GenerateToken(user);
             return Ok(token);
-        }
-        [Route("GetMe")]
-        [HttpGet, Authorize]
-        public ActionResult<string> GetMe()
-        {
-            var userName = User?.Identity?.Name;
-            var userId = User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            var role = User.FindFirstValue(ClaimTypes.Role);
-            return Ok(new { userName, userId, role });
-        }
-
+        }       
     }
 }

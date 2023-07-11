@@ -15,6 +15,7 @@ namespace ProjektAPI.Dtos
 
         [MinLength(2), MaxLength(64), Required]
         public string LastName { get; set; } = null!;
-        public int RoleId { get; set; }
+        [Required]
+        public string Role { get; set; } = null!;
     }
 }

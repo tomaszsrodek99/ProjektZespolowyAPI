@@ -28,10 +28,9 @@ namespace ProjektAPI
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
                         ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
                         ValidIssuer = builder.Configuration["Jwt:Issuer"],
                         ValidAudience = builder.Configuration["Jwt:Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
@@ -57,7 +56,7 @@ namespace ProjektAPI
             // builder.Services.AddSwaggerGen(); przywróciæ jakby coœ siê wysypa³o i zakomentowaæ to ni¿ej
             builder.Services.AddSwaggerGen(options =>
             {
-                options.AddSecurityDefinition("oauth2", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
                 {
                     Description = "Standard Autohrization header using the Bearer scheme (\"baerer {token}\")",
                     In = ParameterLocation.Header,
@@ -70,15 +69,14 @@ namespace ProjektAPI
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
-            builder.Services.AddScoped<IRoleRepository, RoleRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                //app.UseSwagger();
-                //app.UseSwaggerUI();
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
             //moved to test Azure
             app.UseSwagger();
@@ -87,7 +85,7 @@ namespace ProjektAPI
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
-
+            app.UseJwtAuthorization();
             app.UseAuthorization();
 
             app.UseCors("AllowAll");

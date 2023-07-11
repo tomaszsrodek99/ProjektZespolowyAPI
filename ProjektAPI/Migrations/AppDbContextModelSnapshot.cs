@@ -116,7 +116,7 @@ namespace ProjektAPI.Migrations
                     b.ToTable("Expenses");
                 });
 
-            modelBuilder.Entity("ProjektAPI.Models.PrivateCategory", b =>
+            modelBuilder.Entity("ProjektAPI.Models.Role", b =>
                 {
                     b.Property<int>("PrivateCategoryId")
                         .ValueGeneratedOnAdd()
@@ -139,28 +139,7 @@ namespace ProjektAPI.Migrations
 
                     b.HasKey("PrivateCategoryId");
 
-                    b.ToTable("PrivateCategories");
-                });
-
-            modelBuilder.Entity("ProjektAPI.Models.Role", b =>
-                {
-                    b.Property<int>("RoleId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoleId"), 1L, 1);
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("RoleId");
-
-                    b.ToTable("Roles");
+                    b.ToTable("PrivateCategory");
                 });
 
             modelBuilder.Entity("ProjektAPI.Models.User", b =>
@@ -191,12 +170,10 @@ namespace ProjektAPI.Migrations
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<int>("RoleId")
+                    b.Property<int?>("RoleId")
                         .HasColumnType("int");
 
                     b.HasKey("UserId");
-
-                    b.HasIndex("RoleId");
 
                     b.ToTable("Users");
                 });
@@ -239,9 +216,7 @@ namespace ProjektAPI.Migrations
                 {
                     b.HasOne("ProjektAPI.Models.Role", null)
                         .WithMany("Users")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RoleId");
                 });
 
             modelBuilder.Entity("ProjektAPI.Models.Role", b =>
