@@ -116,7 +116,7 @@ namespace ProjektAPI.Migrations
                     b.ToTable("Expenses");
                 });
 
-            modelBuilder.Entity("ProjektAPI.Models.Role", b =>
+            modelBuilder.Entity("ProjektAPI.Models.PrivateCategory", b =>
                 {
                     b.Property<int>("PrivateCategoryId")
                         .ValueGeneratedOnAdd()
@@ -139,7 +139,7 @@ namespace ProjektAPI.Migrations
 
                     b.HasKey("PrivateCategoryId");
 
-                    b.ToTable("PrivateCategory");
+                    b.ToTable("PrivateCategories");
                 });
 
             modelBuilder.Entity("ProjektAPI.Models.User", b =>
@@ -170,8 +170,9 @@ namespace ProjektAPI.Migrations
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<int?>("RoleId")
-                        .HasColumnType("int");
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId");
 
@@ -210,18 +211,6 @@ namespace ProjektAPI.Migrations
                     b.Navigation("PrivateCategory");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ProjektAPI.Models.User", b =>
-                {
-                    b.HasOne("ProjektAPI.Models.Role", null)
-                        .WithMany("Users")
-                        .HasForeignKey("RoleId");
-                });
-
-            modelBuilder.Entity("ProjektAPI.Models.Role", b =>
-                {
-                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }
