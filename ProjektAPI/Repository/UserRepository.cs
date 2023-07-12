@@ -61,7 +61,6 @@ namespace ProjektAPI.Repository
 
                 BudgetLimit = 500,
                 BudgetSpent = 0,
-                BudgetSpentLast30Days = 0,
                 UserId = user.UserId,
                 EndDate = DateTime.Now.AddDays(30),
                 StartDate = DateTime.Now

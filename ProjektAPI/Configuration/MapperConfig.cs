@@ -8,8 +8,6 @@ namespace ProjektAPI.Configuration
         {
             CreateMap<Models.Budget, Dtos.BudgetDto>().ReverseMap();
             CreateMap<Models.Category, Dtos.CategoryDto>().ReverseMap();
-            CreateMap<Models.PrivateCategory, Dtos.PrivateCategoryDto>().ReverseMap();
-            CreateMap<Models.PrivateCategory, Dtos.CategoryDto>().ReverseMap();
             CreateMap<Models.Expense, Dtos.ExpenseDto>().ReverseMap();
             CreateMap<Models.User, Dtos.UserDto>().ReverseMap();
         }

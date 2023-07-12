@@ -70,7 +70,6 @@ namespace ProjektAPI
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<IPrivateCategoryRepository, PrivateCategoryRepository>();
             builder.Services.AddScoped<IBudgetRepository, BudgetRepository>();
             var app = builder.Build();
 
