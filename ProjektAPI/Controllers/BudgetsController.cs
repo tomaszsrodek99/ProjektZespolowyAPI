@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -43,6 +44,76 @@ namespace ProjektAPI.Controllers
             var total = expenseDtos.Sum(e => e.Price);
             return Ok(new { Expenses = expenseDtos, TotalExpenses = total });
         }
+
+        [HttpGet]
+        [Route("GetExpenseSummaries")]
+        public async Task<ActionResult<object>> GetExpenseSummaries(int userId)
+        {
+            var expenses = await _repository.GetTotalExpensesForUser(userId);
+
+            var daily = new List<object>();
+            var startDate = DateTime.Today.AddDays(-6);
+
+            for (int i = 0; i < 7; i++)
+            {
+                var currentDate = startDate.AddDays(i);
+                var dayExpenses = expenses.Where(e => e.Date.Date == currentDate.Date);
+                var dayTotalExpenses = dayExpenses.Sum(e => e.Price);
+
+                daily.Add(new
+                {
+                    Date = currentDate,
+                    DayOfWeek = CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(currentDate.DayOfWeek),
+                    TotalExpenses = dayTotalExpenses,
+                    Expenses = dayExpenses.ToList()
+                });
+            }
+
+            var weekly = expenses.GroupBy(e => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(e.Date, CalendarWeekRule.FirstDay, DayOfWeek.Monday))
+                                 .Select(g => new
+                                 {
+                                     Week = g.Key,
+                                     TotalExpenses = g.Sum(e => e.Price),
+                                     Expenses = g.ToList()
+                                 })
+                                 .ToList();
+
+            var monthly = new List<object>();
+            for (int month = 1; month <= 12; month++)
+            {
+                var monthExpenses = expenses.Where(e => e.Date.Month == month);
+                var monthTotalExpenses = monthExpenses.Sum(e => e.Price);
+                var weeks = monthExpenses.GroupBy(e => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(e.Date, CalendarWeekRule.FirstDay, DayOfWeek.Monday))
+                                         .Select(g => new
+                                         {
+                                             Week = g.Key,
+                                             TotalExpenses = g.Sum(e => e.Price),
+                                             Expenses = g.ToList()
+                                         })
+                                         .ToList();
+
+                monthly.Add(new
+                {
+                    Year = DateTime.Now.Year,
+                    Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month),
+                    TotalExpenses = monthTotalExpenses,
+                    Weeks = weeks
+                });
+            }
+
+            var yearly = expenses.GroupBy(e => e.Date.Year)
+                .Select(g => new
+                {
+                    Year = g.Key,
+                    TotalExpenses = g.Sum(e => e.Price),
+                    Expenses = g.ToList()
+                })
+                .ToList();
+
+            return Ok(new { Weekly = weekly, Monthly = monthly, Yearly = yearly, Daily = daily });
+        }
+
+
 
         [HttpGet]
         [Route("GetExpensesByUserByDate")]
@@ -104,7 +175,7 @@ namespace ProjektAPI.Controllers
             }
 
             var bu = await _repository.GetAsync(id);
-            if(bu == null)
+            if (bu == null)
             {
                 return NotFound();
             }
