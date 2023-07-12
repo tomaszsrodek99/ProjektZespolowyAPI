@@ -1,0 +1,78 @@
+﻿.my-form {
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    margin-top: 25px;
+    max-width: 500px;
+}
+
+    .my-form .form-group {
+        margin-bottom: 15px;
+    }
+
+    .my-form label {
+        font-weight: bold;
+    }
+
+    .my-form input[type="number"] {
+        width: 70px;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+    }
+
+    .my-form input[type="text"],
+    .my-form select {
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+    }
+
+    .my-form button[type="submit"] {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        font-weight: bold;
+        text-align: center;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: #fff;
+        cursor: pointer;
+    }
+
+        .my-form button[type="submit"]:hover {
+            background-color: #0069d9;
+        }
+
+.nav-link:hover {
+    color: lightgreen;
+    cursor: pointer;
+}
+.search-bar {
+    background: url(search-icon.jpg) no-repeat left center;
+    background-size: 22px;
+    padding: 2px 2px 2px 30px;
+    background-color: white;
+    margin-bottom: 15px;
+    border-radius: 7px;
+}
+
+.form-group.decimal-fields {
+    align-items: center;
+}
+
+.centered-label {
+    text-align: center;
+}
+
+.product-list :hover {
+    cursor: pointer;
+    background-color: #f5f5f5;  
+}
+
+.btn-group button{
+    height: 40px;
+}
+

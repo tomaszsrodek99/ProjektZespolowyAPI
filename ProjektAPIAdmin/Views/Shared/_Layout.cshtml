@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] Admin</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/form.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container">
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item logo">
+                            <a class="nav-link">Budget Buddy</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"><i class="fa-solid fa-wallet"></i>Budgets</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark @((ViewContext.RouteData.Values["controller"] as string == "Customer") ? "active" : "")"
+                               asp-controller="Customer" asp-action="Index"><i class="fa-solid fa-list"></i>Categories</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"><i class="fa-solid fa-hand-holding-dollar"></i>Expenses</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark @((ViewContext.RouteData.Values["controller"] as string == "Product") ? "active" : "")"
+                               asp-controller="Product" asp-action="Index">
+                                <i class="fa-solid fa-user"></i>Users
+                            </a>
+                        </li>
+                       
+                        <li class="nav-item text-right">
+                            <a class="nav-link text-dark"><i class="fa-solid fa-right-from-bracket"></i>Log Out</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2023 - ProjektAPIAdmin 
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
