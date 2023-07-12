@@ -130,7 +130,6 @@ namespace ProjektAPI.Controllers
         }
 
 
-
         [HttpGet]
         [Route("GetExpensesByUserByDate")]
         public async Task<ActionResult<ExpensesByUserByDateResponseDto>> GetExpensesByUserByDate(int userId, DateTime startDate, DateTime endDate)
