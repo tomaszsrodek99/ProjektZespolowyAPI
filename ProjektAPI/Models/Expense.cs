@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ProjektAPI.Models
 {
-    [Table("Expenses")]
     public class Expense
     {
         [Key]
@@ -21,7 +20,7 @@ namespace ProjektAPI.Models
         [Required]
         public int UserId { get; set; }
         [Required]
-        public int CategoryId { get; set; } 
-        public Category? Category { get; set; }
+        public int CategoryId { get; set; }
+        public Category Category { get; set; }
     }
 }

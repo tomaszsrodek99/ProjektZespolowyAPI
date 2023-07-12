@@ -58,8 +58,7 @@ namespace ProjektAPI.Repository
             _context.Entry(user).State = EntityState.Detached;
             var budget = new Budget
             {
-
-                BudgetLimit = 500,
+                BudgetLimit = 5000,
                 BudgetSpent = 0,
                 UserId = user.UserId,
                 EndDate = DateTime.Now.AddDays(30),

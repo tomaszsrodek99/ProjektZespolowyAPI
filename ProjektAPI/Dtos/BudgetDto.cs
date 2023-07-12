@@ -7,7 +7,6 @@ namespace ProjektAPI.Dtos
         public int BudgetId { get; set; }
         [Required]
         public int UserId { get; set; }
-        public UserDto? User { get; set; }
         [Required]
         public DateTime StartDate { get; set; }
         [Required]

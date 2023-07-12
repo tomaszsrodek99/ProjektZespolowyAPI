@@ -12,6 +12,14 @@ public class AppDbContext : DbContext
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
     }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        // Relacja 1 do 1 między User a Budget
+        modelBuilder.Entity<User>()
+            .HasOne(u => u.Budget)
+            .WithOne(b => b.User)
+            .HasForeignKey<Budget>(b => b.UserId);
+    }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=HomeExpensesAppDB;Trusted_Connection=True;",
