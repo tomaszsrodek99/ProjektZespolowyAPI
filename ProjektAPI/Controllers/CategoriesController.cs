@@ -28,7 +28,7 @@ namespace ProjektAPI.Controllers
             _privateCategoryRepository = privateCategoryRepository;
         }
         // GET: api/UserCategories
-        [HttpGet("{id}")]
+        [HttpGet,Route("GetUserCategories")]
         public async Task<ActionResult<IEnumerable<CategoryDto>>> GetUserCategories(int id)
         {
             var categories = await _repository.GetAllAsync();

@@ -52,8 +52,23 @@ namespace ProjektAPI.Repository
                 LastName = request.LastName,
                 Role = "User"
             };
+            
+            _context.Add(user);
+            await _context.SaveChangesAsync();
+            _context.Entry(user).State = EntityState.Detached;
+            var budget = new Budget
+            {
 
-            _context.Users.Add(user);
+                BudgetLimit = 500,
+                BudgetSpent = 0,
+                BudgetSpentLast30Days = 0,
+                UserId = user.UserId,
+                EndDate = DateTime.Now.AddDays(30),
+                StartDate = DateTime.Now
+            };
+            
+            _context.Add(budget);
+            
             await _context.SaveChangesAsync();
             return user;
         }
@@ -97,6 +112,8 @@ namespace ProjektAPI.Repository
             var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
             return token;
         }
+
+        
     }
 
 }
