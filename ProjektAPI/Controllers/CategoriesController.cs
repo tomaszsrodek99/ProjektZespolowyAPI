@@ -17,15 +17,28 @@ namespace ProjektAPI.Controllers
     [ApiController]
     public class CategoriesController : ControllerBase
     {
-        private readonly ICategoryRepository _repository; 
+        private readonly ICategoryRepository _repository;
+        private readonly IPrivateCategoryRepository _privateCategoryRepository;
         private readonly IMapper _mapper;
 
-        public CategoriesController(IMapper mapper, ICategoryRepository categoryRepository)
+        public CategoriesController(IMapper mapper, ICategoryRepository categoryRepository, IPrivateCategoryRepository privateCategoryRepository)
         {
             _mapper = mapper;
             _repository = categoryRepository;
+            _privateCategoryRepository = privateCategoryRepository;
         }
-
+        // GET: api/UserCategories
+        [HttpGet("{id}")]
+        public async Task<ActionResult<IEnumerable<CategoryDto>>> GetUserCategories(int id)
+        {
+            var categories = await _repository.GetAllAsync();
+            //var privateCategories = await _privateCategoryRepository.GetAllAsync();
+            var records = _mapper.Map<List<CategoryDto>>(categories.Where(x=>x.UserId == id || x.UserId == 0));
+            //var privateRecords = _mapper.Map<List<CategoryDto>>(privateCategories.Where(x=>x.UserId == id));
+            //var concat = records.Concat(privateRecords);
+            //return Ok(concat);
+            return Ok(records);
+        }
         // GET: api/Categories
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CategoryDto>>> GetCategories()
