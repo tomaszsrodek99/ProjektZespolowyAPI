@@ -28,8 +28,6 @@ namespace ProjektAPI.Models
         [NotMapped]
         public decimal BudgetRemaining => BudgetLimit - BudgetSpent;
 
-        [NotMapped]
-        public decimal BudgetSpentLast30Days { get; set; }
     }
 
 }

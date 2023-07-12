@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ProjektAPI.Dtos
 {
@@ -17,5 +18,6 @@ namespace ProjektAPI.Dtos
         public decimal BudgetSpent { get; set; }
         public decimal BudgetRemaining { get; set; }
         public decimal BudgetSpentLast30Days { get; set; }
+        public decimal BudgetSpentLast7Days { get; set; }
     }
 }

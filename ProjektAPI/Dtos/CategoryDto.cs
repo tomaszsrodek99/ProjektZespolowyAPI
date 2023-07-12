@@ -9,5 +9,6 @@ namespace ProjektAPI.Dtos
         public string Name { get; set; } = null!;
         public string? Icon { get; set; }
         public string? Color { get; set; }
+        public int? UserId { get; set; }
     }
 }
