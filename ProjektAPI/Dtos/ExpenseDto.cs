@@ -20,5 +20,6 @@ namespace ProjektAPI.Dtos
         public int UserId { get; set; }
         [Required]
         public int CategoryId { get; set; }
+        public CategoryDto Category { get; set; }
     }
 }
