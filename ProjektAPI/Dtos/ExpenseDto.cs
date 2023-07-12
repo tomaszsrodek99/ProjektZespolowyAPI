@@ -5,6 +5,7 @@ namespace ProjektAPI.Dtos
 {
     public class ExpenseDto
     {
+        [Required]
         public int ExpenseId { get; set; }
         [Required]
         public string Name { get; set; } = null!;
@@ -17,10 +18,8 @@ namespace ProjektAPI.Dtos
         public DateTime Date { get; set; }
         [Required]
         public int UserId { get; set; }
-        public UserDto? User { get; set; }
-        public int? PrivateCategoryId { get; set; }
-        public PrivateCategoryDto? PrivateCategory { get; set; }
-        public int? CategoryId { get; set; }
+        [Required]
+        public int CategoryId { get; set; }
         public CategoryDto? Category { get; set; }
     }
 }

@@ -13,16 +13,15 @@ namespace ProjektAPI.Models
         public string Name { get; set; } = null!;
         [Required]
         public string Description { get; set; } = null!;
-        [Column(TypeName="decimal(5,2)")]
+        [Column(TypeName="decimal(9,2)")]
         [Required]
         public decimal Price { get; set; }
         [Required]
         public DateTime Date { get; set; }
+        [Required]
         public int UserId { get; set; }
-        public User User { get; set; } = null!;
-        public int? PrivateCategoryId { get; set; }
-        public PrivateCategory? PrivateCategory { get; set; }
-        public int? CategoryId { get; set; } 
+        [Required]
+        public int CategoryId { get; set; } 
         public Category? Category { get; set; }
     }
 }

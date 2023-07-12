@@ -16,6 +16,5 @@ namespace ProjektAPI.Dtos
         public decimal BudgetLimit { get; set; }
         public decimal BudgetSpent { get; set; }
         public decimal BudgetRemaining { get; set; }
-        public decimal BudgetSpentLast30Days { get; set; }
     }
 }
