@@ -58,7 +58,7 @@ namespace ProjektAPI.Controllers
         // PUT: api/Categories/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCategory(int id, Category category)
+        public async Task<IActionResult> PutCategory(int id, CategoryDto category)
         {
             if (id != category.CategoryId)
             {
@@ -93,7 +93,7 @@ namespace ProjektAPI.Controllers
         // POST: api/Categories
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Category>> PostCategory(Category categoryDto)
+        public async Task<ActionResult<CategoryDto>> PostCategory(CategoryDto categoryDto)
         {
             var category = _mapper.Map<Category>(categoryDto);
             await _repository.AddAsync(category);

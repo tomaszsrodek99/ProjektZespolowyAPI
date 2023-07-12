@@ -17,9 +17,8 @@ namespace ProjektAPI.Dtos
         public string LastName { get; set; } = null!;
         [Required]
         public string Role { get; set; } = null!;
-        public int BudgetId { get; set; }
-        public BudgetDto Budget { get; set; }
-        public ICollection<CategoryDto>? Categories { get; set; }
+        
+       
 
     }
 }

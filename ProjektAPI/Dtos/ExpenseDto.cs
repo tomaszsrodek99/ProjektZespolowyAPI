@@ -17,9 +17,11 @@ namespace ProjektAPI.Dtos
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime Date { get; set; }
         [Required]
-        public int UserId { get; set; }
-        [Required]
+        
         public int CategoryId { get; set; }
-        public CategoryDto Category { get; set; }
+        [Required]
+        public int UserId { get; set; }
+        
+        
     }
 }

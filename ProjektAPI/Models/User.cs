@@ -22,7 +22,7 @@ namespace ProjektAPI.Models
         [Required]
         [ForeignKey("Budget")]
         public int BudgetId { get; set; }
-        public Budget Budget { get; set; }
-        public ICollection<Category>? Categories { get; set; }
+        public virtual Budget Budget { get; set; }
+        public virtual ICollection<Category>? Categories { get; set; }
     }
 }

@@ -47,7 +47,7 @@ namespace ProjektAPI.Controllers
                 return NotFound(); 
             }
 
-            return Ok(budget.BudgetLimit);
+            return Ok(budget);
         }
 
         [HttpGet]
@@ -124,6 +124,7 @@ namespace ProjektAPI.Controllers
                     Expenses = g.ToList()
                 })
                 .ToList();
+            
 
             return Ok(new { Weekly = weekly, Monthly = monthly, Yearly = yearly, Daily = daily });
         }

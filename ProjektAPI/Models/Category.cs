@@ -11,6 +11,6 @@ namespace ProjektAPI.Models
         public string? Icon { get; set; }
         public string? Color { get; set; }
         public int? UserId { get; set; }
-        public ICollection<Expense>? Expenses { get; set; }
+        public virtual ICollection<Expense>? Expenses { get; set; }
     }
 }
