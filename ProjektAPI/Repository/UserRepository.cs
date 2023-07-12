@@ -52,24 +52,35 @@ namespace ProjektAPI.Repository
                 LastName = request.LastName,
                 Role = "User"
             };
-            
+
             _context.Add(user);
+
             await _context.SaveChangesAsync();
             _context.Entry(user).State = EntityState.Detached;
+            var currentUser = await _context.Users.SingleOrDefaultAsync(u => u.Email == user.Email);
+
             var budget = new Budget
             {
                 BudgetLimit = 5000,
                 BudgetSpent = 0,
-                UserId = user.UserId,
+                UserId = currentUser.UserId,
                 EndDate = DateTime.Now.AddDays(30),
-                StartDate = DateTime.Now
+                StartDate = DateTime.Now,
+                User = currentUser                
             };
-            
+
             _context.Add(budget);
-            
+
+            await _context.SaveChangesAsync();
+            _context.Entry(budget).State = EntityState.Detached;
+            var currentBudget = await _context.Budgets.SingleOrDefaultAsync(u => u.UserId == currentUser.UserId);
+            currentUser.BudgetId = currentBudget.BudgetId;
+            currentUser.Budget = currentBudget;
+            _context.Update(currentUser);
             await _context.SaveChangesAsync();
             return user;
         }
+
         private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             using (var hmac = new HMACSHA512())

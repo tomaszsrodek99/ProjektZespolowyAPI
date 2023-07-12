@@ -30,5 +30,9 @@ namespace ProjektAPI.Repository
         {
             return await _context.Expenses.Where(e => e.UserId == userId).ToListAsync();
         }
+        public async Task<Budget> GetBudgetByUserId(int userId)
+        {
+            return await _context.Budgets.FirstOrDefaultAsync(b => b.UserId == userId);
+        }
     }
 }

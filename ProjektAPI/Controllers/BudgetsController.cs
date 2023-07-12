@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using ProjektAPI.Contracts;
 using ProjektAPI.Dtos;
 using ProjektAPI.Models;
+using ProjektAPI.Repository;
 
 namespace ProjektAPI.Controllers
 {
@@ -33,6 +34,20 @@ namespace ProjektAPI.Controllers
             var budgets = await _repository.GetAllAsync();
             var records = _mapper.Map<List<Budget>>(budgets);
             return Ok(records);
+        }
+
+        [HttpGet]
+        [Route("GetBudgetForUser")]
+        public async Task<ActionResult<decimal>> GetBudgetForUser(int userId)
+        {
+            var budget = await _repository.GetBudgetByUserId(userId);
+
+            if (budget == null)
+            {
+                return NotFound(); 
+            }
+
+            return Ok(budget.BudgetLimit);
         }
 
         [HttpGet]
