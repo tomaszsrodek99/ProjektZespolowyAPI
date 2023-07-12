@@ -66,32 +66,14 @@ namespace ProjektAPI.Controllers
         {
             var expenses = await _repository.GetTotalExpensesForUser(userId);
 
-            var daily = new List<object>();
-            var startDate = DateTime.Today.AddDays(-6);
-
-            for (int i = 0; i < 7; i++)
-            {
-                var currentDate = startDate.AddDays(i);
-                var dayExpenses = expenses.Where(e => e.Date.Date == currentDate.Date);
-                var dayTotalExpenses = dayExpenses.Sum(e => e.Price);
-
-                daily.Add(new
+            var yearly = expenses.GroupBy(e => e.Date.Year)
+                .Select(g => new
                 {
-                    Date = currentDate,
-                    DayOfWeek = CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(currentDate.DayOfWeek),
-                    TotalExpenses = dayTotalExpenses,
-                    Expenses = dayExpenses.ToList()
-                });
-            }
-
-            var weekly = expenses.GroupBy(e => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(e.Date, CalendarWeekRule.FirstDay, DayOfWeek.Monday))
-                                 .Select(g => new
-                                 {
-                                     Week = g.Key,
-                                     TotalExpenses = g.Sum(e => e.Price),
-                                     Expenses = g.ToList()
-                                 })
-                                 .ToList();
+                    Year = g.Key,
+                    TotalExpenses = g.Sum(e => e.Price),
+                    Expenses = g.ToList()
+                })
+                .ToList();
 
             var monthly = new List<object>();
             for (int month = 1; month <= 12; month++)
@@ -116,18 +98,32 @@ namespace ProjektAPI.Controllers
                 });
             }
 
-            var yearly = expenses.GroupBy(e => e.Date.Year)
-                .Select(g => new
-                {
-                    Year = g.Key,
-                    TotalExpenses = g.Sum(e => e.Price),
-                    Expenses = g.ToList()
-                })
-                .ToList();
-            
+            var currentMonthStartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            var currentMonthEndDate = currentMonthStartDate.AddMonths(1).AddDays(-1);
+            var currentMonthExpenses = expenses.Where(e => e.Date >= currentMonthStartDate && e.Date <= currentMonthEndDate);
+            var currentMonthTotalExpenses = currentMonthExpenses.Sum(e => e.Price);
 
-            return Ok(new { Weekly = weekly, Monthly = monthly, Yearly = yearly, Daily = daily });
+            var daily = new List<object>();
+            var startDate = DateTime.Today.AddDays(-6);
+
+            for (int i = 0; i < 7; i++)
+            {
+                var currentDate = startDate.AddDays(i);
+                var dayExpenses = expenses.Where(e => e.Date.Date == currentDate.Date);
+                var dayTotalExpenses = dayExpenses.Sum(e => e.Price);
+
+                daily.Add(new
+                {
+                    Date = currentDate,
+                    DayOfWeek = CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(currentDate.DayOfWeek),
+                    TotalExpenses = dayTotalExpenses,
+                    Expenses = dayExpenses.ToList()
+                });
+            }
+
+            return Ok(new { Yearly = yearly, Monthly = monthly, CurrentMonth = currentMonthTotalExpenses, Daily = daily });
         }
+
 
 
         [HttpGet]
