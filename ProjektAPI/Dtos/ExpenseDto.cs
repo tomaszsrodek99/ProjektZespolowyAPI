@@ -12,7 +12,7 @@ namespace ProjektAPI.Dtos
         [Required]
         public string Description { get; set; } = null!;
         [Required]
-        public decimal Price { get; set; }
+        public double Price { get; set; }
         [Required]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime Date { get; set; }
