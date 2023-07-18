@@ -14,7 +14,7 @@ namespace ProjektAPI.Models
         public string Description { get; set; } = null!;
         [Column(TypeName="decimal(9,2)")]
         [Required]
-        public decimal Price { get; set; }
+        public double Price { get; set; }
         [Required]
         public DateTime Date { get; set; }
         [Required]
