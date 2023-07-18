@@ -20,13 +20,13 @@ namespace ProjektAPI.Models
         public DateTime EndDate { get; set; }
 
         [Required]
-        [Column(TypeName = "decimal(9,2)")]
-        public decimal BudgetLimit { get; set; }
+        
+        public double BudgetLimit { get; set; }
 
-        [Column(TypeName = "decimal(9,2)")]
-        public decimal BudgetSpent { get; set; }
+        
+        public double BudgetSpent { get; set; }
 
         [NotMapped]
-        public decimal BudgetRemaining => BudgetLimit - BudgetSpent;
+        public double BudgetRemaining => BudgetLimit - BudgetSpent;
     }
 }

@@ -13,8 +13,8 @@ namespace ProjektAPI.Dtos
         [Required]
         public DateTime EndDate { get; set; }
         [Required]
-        public decimal BudgetLimit { get; set; }
-        public decimal BudgetSpent { get; set; }
-        public decimal BudgetRemaining { get; set; }
+        public double BudgetLimit { get; set; }
+        public double BudgetSpent { get; set; }
+        public double BudgetRemaining { get; set; }
     }
 }

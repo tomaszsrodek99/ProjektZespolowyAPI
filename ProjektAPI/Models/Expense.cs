@@ -12,7 +12,6 @@ namespace ProjektAPI.Models
         public string Name { get; set; } = null!;
         [Required]
         public string Description { get; set; } = null!;
-        [Column(TypeName="decimal(9,2)")]
         [Required]
         public double Price { get; set; }
         [Required]

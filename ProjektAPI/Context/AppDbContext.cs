@@ -22,8 +22,8 @@ public class AppDbContext : DbContext
     }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=HomeExpensesAppDB;Trusted_Connection=True;",
-        //optionsBuilder.UseSqlServer("Data Source=tcp:homeexpensesappdbdbserver.database.windows.net,1433;Initial Catalog=HomeExpensesAppDB;User Id=DbAdmin@homeexpensesappdbdbserver;Password=P@$$w0rd",
+        //optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=HomeExpensesAppDB;Trusted_Connection=True;",
+        optionsBuilder.UseSqlServer("Data Source=tcp:projektapidbserver.database.windows.net,1433;Initial Catalog=ProjektAPI_db;User Id=DbAdmin@projektapidbserver;Password=P@ssw0rd",
                 x => x.MigrationsHistoryTable("__EFMigrationsHistory", "Identity"));
     }
 }
