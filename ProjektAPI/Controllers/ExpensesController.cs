@@ -18,15 +18,13 @@ namespace ProjektAPI.Controllers
     public class ExpensesController : ControllerBase
     {
         private readonly IExpenseRepository _repository;
-        private readonly IBudgetRepository _budgetRepository;
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
 
-        public ExpensesController(IMapper mapper, IExpenseRepository expenseRepository, IBudgetRepository budgetRepository, AppDbContext dbContext)
+        public ExpensesController(IMapper mapper, IExpenseRepository expenseRepository, AppDbContext dbContext)
         {
             _mapper = mapper;
             _repository = expenseRepository;
-            _budgetRepository = budgetRepository;
             _dbContext = dbContext;
         }
 
@@ -93,10 +91,9 @@ namespace ProjektAPI.Controllers
         {
             var expense = _mapper.Map<Expense>(expensedDto);
             await _repository.AddAsync(expense);
-            var userId = expense.UserId;
-            var totalSpent = await _repository.GetTotalSpentAmountForUser(userId);
+            var totalSpent = await _repository.GetTotalSpentAmountForUser(expense.UserId);
 
-            var budget = await _dbContext.Budgets.Where(x => x.UserId == userId).FirstOrDefaultAsync();
+            var budget = await _dbContext.Budgets.Where(x => x.UserId == expense.UserId).FirstOrDefaultAsync();
             budget.BudgetSpent = totalSpent;
             _dbContext.Update(budget);
             _dbContext.SaveChanges();
