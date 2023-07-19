@@ -102,7 +102,6 @@ namespace ProjektAPI.Controllers
             var currentMonthStartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
             var currentMonthEndDate = currentMonthStartDate.AddMonths(1).AddDays(-1);
             var currentMonthExpenses = expenses.Where(e => e.Date >= currentMonthStartDate && e.Date <= DateTime.Today);
-            var currentMonthTotalExpenses = currentMonthExpenses.Sum(e => e.Price);
             var dailyCurrentMonth = currentMonthExpenses.GroupBy(e => e.Date.Date)
                                                         .Select(g => new
                                                         {
@@ -110,7 +109,9 @@ namespace ProjektAPI.Controllers
                                                             TotalExpenses = g.Sum(e => e.Price),
                                                             Expenses = g.ToList()
                                                         })
+                                                        .OrderByDescending(g => g.Date) // Sortowanie po dacie malejąco
                                                         .ToList();
+            var currentMonthTotalExpenses = currentMonthExpenses.Sum(e => e.Price);
 
             var daily = new List<object>();
             var startDate = DateTime.Today.AddDays(-6);
@@ -131,15 +132,16 @@ namespace ProjektAPI.Controllers
             }
 
             var last31DaysExpenses = expenses.Where(e => e.Date >= DateTime.Today.AddDays(-30) && e.Date <= DateTime.Today);
-            var last31DaysTotalExpenses = last31DaysExpenses.Sum(e => e.Price);
             var dailyLast31Days = last31DaysExpenses.GroupBy(e => e.Date.Date)
-                                                  .Select(g => new
-                                                  {
-                                                      Date = g.Key,
-                                                      TotalExpenses = g.Sum(e => e.Price),
-                                                      Expenses = g.ToList()
-                                                  })
-                                                  .ToList();
+                                                   .Select(g => new
+                                                   {
+                                                       Date = g.Key,
+                                                       TotalExpenses = g.Sum(e => e.Price),
+                                                       Expenses = g.ToList()
+                                                   })
+                                                   .OrderByDescending(g => g.Date) // Sortowanie po dacie malejąco
+                                                   .ToList();
+            var last31DaysTotalExpenses = last31DaysExpenses.Sum(e => e.Price);
 
             return Ok(new
             {
