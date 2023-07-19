@@ -55,7 +55,8 @@ namespace ProjektAPI.Controllers
         public async Task<ActionResult<decimal>> GetTotalExpensesForUser(int userId)
         {
             var totalExpenses = await _repository.GetTotalExpensesForUser(userId);
-            var expenseDtos = _mapper.Map<List<ExpenseDto>>(totalExpenses);
+            var sortedExpenses = totalExpenses.OrderByDescending(e => e.Date).ToList();
+            var expenseDtos = _mapper.Map<List<ExpenseDto>>(sortedExpenses);
             var total = expenseDtos.Sum(e => e.Price);
             return Ok(new { Expenses = expenseDtos, TotalExpenses = total });
         }
@@ -100,8 +101,16 @@ namespace ProjektAPI.Controllers
 
             var currentMonthStartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
             var currentMonthEndDate = currentMonthStartDate.AddMonths(1).AddDays(-1);
-            var currentMonthExpenses = expenses.Where(e => e.Date >= currentMonthStartDate && e.Date <= currentMonthEndDate);
+            var currentMonthExpenses = expenses.Where(e => e.Date >= currentMonthStartDate && e.Date <= DateTime.Today);
             var currentMonthTotalExpenses = currentMonthExpenses.Sum(e => e.Price);
+            var dailyCurrentMonth = currentMonthExpenses.GroupBy(e => e.Date.Date)
+                                                        .Select(g => new
+                                                        {
+                                                            Date = g.Key,
+                                                            TotalExpenses = g.Sum(e => e.Price),
+                                                            Expenses = g.ToList()
+                                                        })
+                                                        .ToList();
 
             var daily = new List<object>();
             var startDate = DateTime.Today.AddDays(-6);
@@ -120,7 +129,28 @@ namespace ProjektAPI.Controllers
                     Expenses = dayExpenses.ToList()
                 });
             }
-            return Ok(new { Yearly = yearly, Monthly = monthly, CurrentMonth = currentMonthTotalExpenses, Daily = daily });
+
+            var last31DaysExpenses = expenses.Where(e => e.Date >= DateTime.Today.AddDays(-30) && e.Date <= DateTime.Today);
+            var last31DaysTotalExpenses = last31DaysExpenses.Sum(e => e.Price);
+            var dailyLast31Days = last31DaysExpenses.GroupBy(e => e.Date.Date)
+                                                  .Select(g => new
+                                                  {
+                                                      Date = g.Key,
+                                                      TotalExpenses = g.Sum(e => e.Price),
+                                                      Expenses = g.ToList()
+                                                  })
+                                                  .ToList();
+
+            return Ok(new
+            {
+                Yearly = yearly,
+                Monthly = monthly,
+                Daily = daily,
+                Last31DaysTotalExpenses = last31DaysTotalExpenses,
+                DailyLast31Days = dailyLast31Days,
+                CurrentMonth = currentMonthTotalExpenses,
+                DailyCurrentMonth = dailyCurrentMonth
+            });
         }
 
         [HttpGet]
