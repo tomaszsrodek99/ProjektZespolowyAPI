@@ -120,11 +120,92 @@ namespace ProjektAPI.Controllers
                     Expenses = dayExpenses.ToList()
                 });
             }
-
             return Ok(new { Yearly = yearly, Monthly = monthly, CurrentMonth = currentMonthTotalExpenses, Daily = daily });
         }
 
+        [HttpGet]
+        [Route("GetGetNextWeekForecast")]
+        public async Task<ActionResult<double>> GetNextWeekForecast(int userId)
+        {
+            try
+            {
+                // Załóżmy, że expenses to lista obiektów reprezentujących istniejące wydatki użytkownika.
+                var expenses = await _repository.GetTotalExpensesForUser(userId);
 
+                // Oblicz datę początkową i końcową poprzedniego tygodnia.
+                var endDate = DateTime.Today.AddDays(-1); // Dzień przed dzisiejszym.
+                var startDate = endDate.AddDays(-7); // Data początkowa to 7 dni przed datą końcową.
+
+                // Wybierz wydatki, które mieszczą się w zakresie poprzedniego tygodnia.
+                var previousWeekExpenses = expenses.Where(e => e.Date >= startDate && e.Date <= endDate);
+
+                // Oblicz średnią wartość wydatków z poprzedniego tygodnia.
+                var previousWeekAverage = previousWeekExpenses.Average(e => e.Price);
+
+                return Ok(previousWeekAverage);
+            }
+            catch (Exception ex)
+            {
+                // Obsługa wyjątku lub braku danych
+                return Ok("Missing data");
+            }
+        }
+
+        [HttpGet]
+        [Route("GetNextMonthForecast")]
+        public async Task<ActionResult<double>> GetNextMonthForecast(int userId)
+        {
+            try
+            {
+                // Załóżmy, że expenses to lista obiektów reprezentujących istniejące wydatki użytkownika.
+                var expenses = await _repository.GetTotalExpensesForUser(userId);
+
+                // Oblicz datę początkową i końcową ostatniego miesiąca.
+                var endDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).AddDays(-1); // Dzień przed pierwszym dniem bieżącego miesiąca.
+                var startDate = endDate.AddDays(-endDate.Day + 1); // Data początkowa to pierwszy dzień ostatniego miesiąca.
+
+                // Wybierz wydatki, które mieszczą się w zakresie ostatniego miesiąca.
+                var lastMonthExpenses = expenses.Where(e => e.Date >= startDate && e.Date <= endDate);
+
+                // Oblicz średnią wartość wydatków z ostatniego miesiąca.
+                var lastMonthAverage = lastMonthExpenses.Average(e => e.Price);
+
+                return Ok(lastMonthAverage);
+            }
+            catch (Exception ex)
+            {
+                // Obsługa wyjątku lub braku danych
+                return Ok("Missing data");
+            }
+        }
+
+        [HttpGet]
+        [Route("GetNextYearForecast")]
+        public async Task<ActionResult<double>> GetNextYearForecast(int userId)
+        {
+            try
+            {
+                // Załóżmy, że expenses to lista obiektów reprezentujących istniejące wydatki użytkownika.
+                var expenses = await _repository.GetTotalExpensesForUser(userId);
+
+                // Oblicz datę początkową i końcową dla aktualnego roku.
+                var currentYearStartDate = new DateTime(DateTime.Today.Year, 1, 1);
+                var currentYearEndDate = DateTime.Today;
+
+                // Wybierz wydatki, które mieszczą się w zakresie aktualnego roku.
+                var currentYearExpenses = expenses.Where(e => e.Date >= currentYearStartDate && e.Date <= currentYearEndDate);
+
+                // Oblicz średnią wartość wydatków z aktualnego roku.
+                var annualExpenseAverage = currentYearExpenses.Average(e => e.Price);
+
+                return Ok(annualExpenseAverage);
+            }
+            catch (Exception ex)
+            {
+                // Obsługa wyjątku lub braku danych
+                return Ok("Missing data");
+            }
+        }
 
         [HttpGet]
         [Route("GetExpensesByUserByDate")]
