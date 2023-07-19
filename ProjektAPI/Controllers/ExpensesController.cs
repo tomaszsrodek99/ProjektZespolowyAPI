@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
@@ -17,12 +18,16 @@ namespace ProjektAPI.Controllers
     public class ExpensesController : ControllerBase
     {
         private readonly IExpenseRepository _repository;
+        private readonly IBudgetRepository _budgetRepository;
+        private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
 
-        public ExpensesController(IMapper mapper, IExpenseRepository expenseRepository)
+        public ExpensesController(IMapper mapper, IExpenseRepository expenseRepository, IBudgetRepository budgetRepository, AppDbContext dbContext)
         {
             _mapper = mapper;
             _repository = expenseRepository;
+            _budgetRepository = budgetRepository;
+            _dbContext = dbContext;
         }
 
         // GET: api/Expenses
@@ -88,6 +93,14 @@ namespace ProjektAPI.Controllers
         {
             var expense = _mapper.Map<Expense>(expensedDto);
             await _repository.AddAsync(expense);
+            var userId = expense.UserId;
+            var totalSpent = await _repository.GetTotalSpentAmountForUser(userId);
+
+            var budget = await _dbContext.Budgets.Where(x => x.UserId == userId).FirstOrDefaultAsync();
+            budget.BudgetSpent = totalSpent;
+            _dbContext.Update(budget);
+            _dbContext.SaveChanges();
+
             return CreatedAtAction("GetExpense", new { id = expense.ExpenseId }, expense);
         }
 

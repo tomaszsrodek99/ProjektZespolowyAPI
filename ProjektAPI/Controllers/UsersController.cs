@@ -21,12 +21,16 @@ namespace ProjektAPI.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserRepository _repository;
+        private readonly IExpenseRepository _expenseRepository;
+        private readonly IBudgetRepository _budgetRepository;
         private readonly IMapper _mapper;
 
-        public UsersController(IMapper mapper, IUserRepository userRepository)
+        public UsersController(IMapper mapper, IUserRepository userRepository, IExpenseRepository expenseRepository, IBudgetRepository budgetRepository)
         {
             _mapper = mapper;
             _repository = userRepository;
+            _expenseRepository = expenseRepository;
+            _budgetRepository = budgetRepository;
         }
 
         // GET: api/Users
@@ -140,6 +144,11 @@ namespace ProjektAPI.Controllers
             {
                 return BadRequest("Invalid credentials");
             }
+
+            double totalSpentAmount = await _expenseRepository.GetTotalSpentAmountForUser(user.UserId);
+            var budget = await _budgetRepository.GetBudgetByUserId(user.BudgetId);
+            budget.BudgetSpent = totalSpentAmount;
+            await _budgetRepository.UpdateAsync(budget);
 
             string token = _repository.GenerateToken(user);
             return Ok(token);
