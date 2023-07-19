@@ -125,7 +125,7 @@ namespace ProjektAPI.Controllers
 
 
 
-            // ... (istniejący kod)
+           
 
             return Ok(new { Yearly = yearly, Monthly = monthly, CurrentMonth = currentMonthTotalExpenses, Last31Days = last31DaysTotalExpenses });
         }
