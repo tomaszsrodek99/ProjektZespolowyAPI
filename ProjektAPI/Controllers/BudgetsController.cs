@@ -156,7 +156,7 @@ namespace ProjektAPI.Controllers
 
             var startDate = lastExpense.Date.AddDays(-days);
             var expenses = await _repository.GetExpensesByUserAndDate(userId, startDate, lastExpense.Date);
-            var totalSpending = expenses.Sum(e => (float)e.Price);
+            var totalSpending = expenses.Sum(e => (double)e.Price);
 
             var expenseDtos = _mapper.Map<List<ExpenseDto>>(expenses);
 
