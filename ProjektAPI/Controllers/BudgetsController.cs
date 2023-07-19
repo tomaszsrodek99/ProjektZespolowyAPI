@@ -102,6 +102,8 @@ namespace ProjektAPI.Controllers
             var currentMonthEndDate = currentMonthStartDate.AddMonths(1).AddDays(-1);
             var currentMonthExpenses = expenses.Where(e => e.Date >= currentMonthStartDate && e.Date <= currentMonthEndDate);
             var currentMonthTotalExpenses = currentMonthExpenses.Sum(e => e.Price);
+            var last31DaysExpenses = expenses.Where(e => e.Date >= DateTime.Today.AddDays(-30));
+            var last31DaysTotalExpenses = last31DaysExpenses.Sum(e => e.Price);
 
             var daily = new List<object>();
             var startDate = DateTime.Today.AddDays(-6);
@@ -120,7 +122,12 @@ namespace ProjektAPI.Controllers
                     Expenses = dayExpenses.ToList()
                 });
             }
-            return Ok(new { Yearly = yearly, Monthly = monthly, CurrentMonth = currentMonthTotalExpenses, Daily = daily });
+
+
+
+            // ... (istniejący kod)
+
+            return Ok(new { Yearly = yearly, Monthly = monthly, CurrentMonth = currentMonthTotalExpenses, Last31Days = last31DaysTotalExpenses });
         }
 
         [HttpGet]
