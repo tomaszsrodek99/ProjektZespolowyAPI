@@ -363,7 +363,7 @@ namespace ProjektAPI.Controllers
                 return Ok("No expenses for this user");
             }
 
-            // Grupujemy wydatki po kategorii i sumujemy wydatki w danej kategorii
+            
             var categoryExpenses = expenses.GroupBy(e => e.CategoryId)
                                            .Select(g => new
                                            {
@@ -372,7 +372,7 @@ namespace ProjektAPI.Controllers
                                            })
                                            .ToList();
 
-            // Szukamy kategorii z największymi wydatkami
+            
             var mostSpentCategory = categoryExpenses.OrderByDescending(c => c.TotalExpenses)
                                                     .FirstOrDefault();
 
@@ -381,7 +381,7 @@ namespace ProjektAPI.Controllers
                 return Ok("No expenses found");
             }
 
-            // Pobieramy szczegóły kategorii z repozytorium na podstawie Id
+           
             var category = await _categoryRepository.GetAsync(mostSpentCategory.CategoryId);
 
             if (category == null)
@@ -389,7 +389,7 @@ namespace ProjektAPI.Controllers
                 return Ok("Category not found");
             }
 
-            // Tworzymy anonimowy obiekt z danymi kategorii i sumą wydatków
+            
             var result = new
             {
                 Category = _mapper.Map<CategoryDto>(category),
