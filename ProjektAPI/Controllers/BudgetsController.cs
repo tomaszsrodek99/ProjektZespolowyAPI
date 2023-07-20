@@ -102,16 +102,17 @@ namespace ProjektAPI.Controllers
                 });
             }
 
+            // Calculate expenses for each day in the current month, including one more day
             var currentMonthStartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-            var currentMonthEndDate = currentMonthStartDate.AddMonths(1).AddDays(-1);
-            var currentMonthExpenses = expenses.Where(e => e.Date >= currentMonthStartDate && e.Date <= DateTime.Today);
+            var nextMonthStartDate = currentMonthStartDate.AddMonths(1);
+            var currentMonthExpenses = expenses.Where(e => e.Date >= currentMonthStartDate && e.Date < nextMonthStartDate);
 
             // Create a list of all days in the current month
-            var allDaysInCurrentMonth = Enumerable.Range(0, currentMonthEndDate.Day)
+            var allDaysInCurrentMonth = Enumerable.Range(0, (nextMonthStartDate - currentMonthStartDate).Days)
                                                   .Select(offset => currentMonthStartDate.AddDays(offset))
                                                   .ToList();
 
-            // Calculate expenses for each day in the current month
+            // Calculate expenses for each day in the current month, including one additional day for the next month
             var dailyCurrentMonth = allDaysInCurrentMonth.Select(currentDate =>
             {
                 var dayExpenses = currentMonthExpenses.Where(e => e.Date.Date == currentDate.Date);
@@ -126,7 +127,7 @@ namespace ProjektAPI.Controllers
                 };
             }).ToList();
 
-            // Sortujemy dane tylko po dacie w kolejności rosnącej
+            // Sort the data by date in ascending order
             dailyCurrentMonth = dailyCurrentMonth.OrderBy(d => d.Date).ToList();
 
             var currentMonthTotalExpenses = currentMonthExpenses.Sum(e => e.Price);
@@ -168,7 +169,7 @@ namespace ProjektAPI.Controllers
                 };
             }).ToList();
 
-            // Sortujemy dane tylko po dacie w kolejności rosnącej
+            // Sort the data by date in ascending order
             dailyLast31Days = dailyLast31Days.OrderBy(d => d.Date).ToList();
 
             var last31DaysTotalExpenses = dailyLast31Days.Sum(e => e.TotalExpenses);
