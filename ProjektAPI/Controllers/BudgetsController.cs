@@ -330,7 +330,7 @@ namespace ProjektAPI.Controllers
             {
                 return NotFound();
             }
-            _mapper.Map(budget, budget);
+            _mapper.Map(budget, bu);
             try
             {
                 await _repository.UpdateAsync(budget);

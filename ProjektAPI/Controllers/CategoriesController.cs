@@ -70,7 +70,7 @@ namespace ProjektAPI.Controllers
             {
                 return NotFound();
             }
-            _mapper.Map(user, user);
+            _mapper.Map(category, user);
             try
             {
                 await _repository.UpdateAsync(user);

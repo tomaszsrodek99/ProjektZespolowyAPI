@@ -65,6 +65,7 @@ namespace ProjektAPI.Controllers
             {
                 return NotFound();
             }
+            _mapper.Map(expenseDto, expense);
             try
             {
                 await _repository.UpdateAsync(expense);
