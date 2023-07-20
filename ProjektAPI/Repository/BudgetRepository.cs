@@ -34,5 +34,6 @@ namespace ProjektAPI.Repository
         {
             return await _context.Budgets.FirstOrDefaultAsync(b => b.UserId == userId);
         }
+
     }
 }

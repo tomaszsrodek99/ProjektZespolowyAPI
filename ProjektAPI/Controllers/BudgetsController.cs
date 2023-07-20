@@ -20,11 +20,13 @@ namespace ProjektAPI.Controllers
     {
         private readonly IBudgetRepository _repository;
         private readonly IMapper _mapper;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public BudgetsController(IMapper mapper, IBudgetRepository budgetRepository)
+        public BudgetsController(IMapper mapper, IBudgetRepository budgetRepository, ICategoryRepository categoryRepository)
         {
             _mapper = mapper;
             _repository = budgetRepository;
+           _categoryRepository = categoryRepository;
         }
 
         // GET: api/Budgets
@@ -63,6 +65,7 @@ namespace ProjektAPI.Controllers
 
         [HttpGet]
         [Route("GetExpenseSummaries")]
+
         public async Task<ActionResult<object>> GetExpenseSummaries(int userId)
         {
             var expenses = await _repository.GetTotalExpensesForUser(userId);
@@ -348,6 +351,52 @@ namespace ProjektAPI.Controllers
             }
 
             return NoContent();
+        }
+        [HttpGet]
+        [Route("GetMostSpentCategoryForUser")]
+        public async Task<ActionResult<object>> GetMostSpentCategoryForUser(int userId)
+        {
+            var expenses = await _repository.GetTotalExpensesForUser(userId);
+
+            if (expenses == null || !expenses.Any())
+            {
+                return Ok("No expenses for this user");
+            }
+
+            // Grupujemy wydatki po kategorii i sumujemy wydatki w danej kategorii
+            var categoryExpenses = expenses.GroupBy(e => e.CategoryId)
+                                           .Select(g => new
+                                           {
+                                               CategoryId = g.Key,
+                                               TotalExpenses = g.Sum(e => e.Price)
+                                           })
+                                           .ToList();
+
+            // Szukamy kategorii z największymi wydatkami
+            var mostSpentCategory = categoryExpenses.OrderByDescending(c => c.TotalExpenses)
+                                                    .FirstOrDefault();
+
+            if (mostSpentCategory == null)
+            {
+                return Ok("No expenses found");
+            }
+
+            // Pobieramy szczegóły kategorii z repozytorium na podstawie Id
+            var category = await _categoryRepository.GetAsync(mostSpentCategory.CategoryId);
+
+            if (category == null)
+            {
+                return Ok("Category not found");
+            }
+
+            // Tworzymy anonimowy obiekt z danymi kategorii i sumą wydatków
+            var result = new
+            {
+                Category = _mapper.Map<CategoryDto>(category),
+                TotalExpenses = mostSpentCategory.TotalExpenses
+            };
+
+            return Ok(result);
         }
 
         // POST: api/Budgets
