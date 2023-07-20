@@ -102,15 +102,30 @@ namespace ProjektAPI.Controllers
             var currentMonthStartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
             var currentMonthEndDate = currentMonthStartDate.AddMonths(1).AddDays(-1);
             var currentMonthExpenses = expenses.Where(e => e.Date >= currentMonthStartDate && e.Date <= DateTime.Today);
-            var dailyCurrentMonth = currentMonthExpenses.GroupBy(e => e.Date.Date)
-                                                        .Select(g => new
-                                                        {
-                                                            Date = g.Key,
-                                                            TotalExpenses = g.Sum(e => e.Price),
-                                                            Expenses = g.ToList()
-                                                        })
-                                                        .OrderByDescending(g => g.Date) // Sortowanie po dacie malejąco
-                                                        .ToList();
+
+            // Create a list of all days in the current month
+            var allDaysInCurrentMonth = Enumerable.Range(0, currentMonthEndDate.Day)
+                                                  .Select(offset => currentMonthStartDate.AddDays(offset))
+                                                  .ToList();
+
+            // Calculate expenses for each day in the current month
+            var dailyCurrentMonth = allDaysInCurrentMonth.Select(currentDate =>
+            {
+                var dayExpenses = currentMonthExpenses.Where(e => e.Date.Date == currentDate.Date);
+                var dayTotalExpenses = dayExpenses.Sum(e => e.Price);
+
+                return new
+                {
+                    Date = currentDate,
+                    DayOfWeek = CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(currentDate.DayOfWeek),
+                    TotalExpenses = dayTotalExpenses,
+                    Expenses = dayExpenses.ToList()
+                };
+            }).ToList();
+
+            // Sortujemy dane tylko po dacie w kolejności rosnącej
+            dailyCurrentMonth = dailyCurrentMonth.OrderBy(d => d.Date).ToList();
+
             var currentMonthTotalExpenses = currentMonthExpenses.Sum(e => e.Price);
 
             var daily = new List<object>();
@@ -132,16 +147,28 @@ namespace ProjektAPI.Controllers
             }
 
             var last31DaysExpenses = expenses.Where(e => e.Date >= DateTime.Today.AddDays(-30) && e.Date <= DateTime.Today);
-            var dailyLast31Days = last31DaysExpenses.GroupBy(e => e.Date.Date)
-                                                   .Select(g => new
-                                                   {
-                                                       Date = g.Key,
-                                                       TotalExpenses = g.Sum(e => e.Price),
-                                                       Expenses = g.ToList()
-                                                   })
-                                                   .OrderByDescending(g => g.Date) // Sortowanie po dacie malejąco
-                                                   .ToList();
-            var last31DaysTotalExpenses = last31DaysExpenses.Sum(e => e.Price);
+            var allDaysInRange = Enumerable.Range(0, 31)
+                                   .Select(offset => DateTime.Today.AddDays(-offset))
+                                   .ToList();
+
+            var dailyLast31Days = allDaysInRange.Select(currentDate =>
+            {
+                var dayExpenses = expenses.Where(e => e.Date.Date == currentDate.Date);
+                var dayTotalExpenses = dayExpenses.Sum(e => e.Price);
+
+                return new
+                {
+                    Date = currentDate,
+                    DayOfWeek = CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(currentDate.DayOfWeek),
+                    TotalExpenses = dayTotalExpenses,
+                    Expenses = dayExpenses.ToList()
+                };
+            }).ToList();
+
+            // Sortujemy dane tylko po dacie w kolejności rosnącej
+            dailyLast31Days = dailyLast31Days.OrderBy(d => d.Date).ToList();
+
+            var last31DaysTotalExpenses = dailyLast31Days.Sum(e => e.TotalExpenses);
 
             return Ok(new
             {
