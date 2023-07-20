@@ -354,7 +354,7 @@ namespace ProjektAPI.Controllers
         }
         [HttpGet]
         [Route("GetMostSpentCategoryForUser")]
-        public async Task<ActionResult<object>> GetMostSpentCategoryForUser(int userId)
+        public async Task<ActionResult<object>> GetCategoriesAndExpensesForUser(int userId)
         {
             var expenses = await _repository.GetTotalExpensesForUser(userId);
 
@@ -363,7 +363,6 @@ namespace ProjektAPI.Controllers
                 return Ok("No expenses for this user");
             }
 
-            
             var categoryExpenses = expenses.GroupBy(e => e.CategoryId)
                                            .Select(g => new
                                            {
@@ -372,33 +371,147 @@ namespace ProjektAPI.Controllers
                                            })
                                            .ToList();
 
-            
-            var mostSpentCategory = categoryExpenses.OrderByDescending(c => c.TotalExpenses)
-                                                    .FirstOrDefault();
-
-            if (mostSpentCategory == null)
+            if (!categoryExpenses.Any())
             {
                 return Ok("No expenses found");
             }
 
-           
-            var category = await _categoryRepository.GetAsync(mostSpentCategory.CategoryId);
+            var mostSpentCategory = categoryExpenses.OrderByDescending(c => c.TotalExpenses)
+                                                    .FirstOrDefault();
 
-            if (category == null)
+            var categories = await _categoryRepository.GetAllAsync(); // Assuming you have a method to get all categories from the repository
+
+            var categoryExpensesWithDetails = categoryExpenses.Select(c =>
             {
-                return Ok("Category not found");
-            }
+                var category = categories.FirstOrDefault(cat => cat.CategoryId == c.CategoryId);
+                return new
+                {
+                    Category = _mapper.Map<CategoryDto>(category),
+                    TotalExpenses = c.TotalExpenses
+                };
+            }).ToList();
 
-            
             var result = new
             {
-                Category = _mapper.Map<CategoryDto>(category),
-                TotalExpenses = mostSpentCategory.TotalExpenses
+                MostSpentCategory = categoryExpensesWithDetails.FirstOrDefault(c => c.Category.CategoryId == mostSpentCategory.CategoryId),
+                AllCategoryExpenses = categoryExpensesWithDetails
             };
 
             return Ok(result);
         }
+        public enum TimePeriod
+        {
+            Week,
+            Month,
+            Year
+        }
+        [HttpGet]
+        [Route("GetExpenseStatisticsForPeriod")]
+        public async Task<ActionResult<object>> GetExpenseStatisticsForPeriod(int userId, TimePeriod period)
+        {
+            // Pobierz wydatki dla użytkownika
+            var expenses = await _repository.GetTotalExpensesForUser(userId);
 
+            // Sprawdź, czy użytkownik ma jakiekolwiek wydatki
+            if (expenses == null || !expenses.Any())
+            {
+                return Ok("No expenses for this user");
+            }
+
+            // Określ zakres dat dla okresu, w którym obliczane są statystyki
+            DateTime startDate;
+            DateTime endDate = DateTime.Now;
+
+            switch (period)
+            {
+                case TimePeriod.Week:
+                    startDate = endDate.AddDays(-7);
+                    break;
+                case TimePeriod.Month:
+                    startDate = endDate.AddMonths(-1);
+                    break;
+                case TimePeriod.Year:
+                    startDate = endDate.AddYears(-1);
+                    break;
+                default:
+                    return BadRequest("Invalid period");
+            }
+
+            // Wybierz tylko wydatki z określonego okresu
+            var expensesForPeriod = expenses.Where(e => e.Date >= startDate && e.Date <= endDate).ToList();
+
+            // Sprawdź, czy istnieją wydatki w wybranym okresie
+            if (!expensesForPeriod.Any())
+            {
+                return Ok($"No expenses found for the {period} period");
+            }
+
+            // Zgrupuj wydatki w okresie według kategorii i oblicz sumę wydatków w każdej kategorii
+            var categoryExpenses = expensesForPeriod.GroupBy(e => e.CategoryId)
+                                                    .Select(g => new
+                                                    {
+                                                        CategoryId = g.Key,
+                                                        TotalExpenses = g.Sum(e => e.Price)
+                                                    })
+                                                    .ToList();
+
+            // Znajdź kategorię z największymi wydatkami w okresie
+            var mostSpentCategory = categoryExpenses.OrderByDescending(c => c.TotalExpenses)
+                                                    .FirstOrDefault();
+
+            // Znajdź kategorię, której wydatki występują najczęściej w okresie
+            var mostFrequentCategory = categoryExpenses.OrderByDescending(c => c.TotalExpenses)
+                                                      .GroupBy(c => c.TotalExpenses)
+                                                      .OrderByDescending(g => g.Count())
+                                                      .FirstOrDefault()
+                                                      ?.FirstOrDefault();
+
+            // Znajdź kategorię z najniższymi wydatkami w okresie
+            var leastSpentCategory = categoryExpenses.OrderBy(c => c.TotalExpenses)
+                                                     .FirstOrDefault();
+
+            // Pobierz wszystkie kategorie
+            var categories = await _categoryRepository.GetAllAsync();
+
+            // Mapuj wydatki kategorii na obiekt z danymi kategorii oraz sumą wydatków
+            var categoryExpensesWithDetails = categoryExpenses.Select(c =>
+            {
+                var category = categories.FirstOrDefault(cat => cat.CategoryId == c.CategoryId);
+                return new
+                {
+                    Category = _mapper.Map<CategoryDto>(category),
+                    TotalExpenses = c.TotalExpenses
+                };
+            }).ToList();
+
+            // Znajdź kategorie, w których nie było żadnych wydatków w okresie
+            var categoriesWithNoExpenses = categories.Where(cat => !categoryExpenses.Any(c => c.CategoryId == cat.CategoryId))
+                                                     .Select(cat => new
+                                                     {
+                                                         Category = _mapper.Map<CategoryDto>(cat),
+                                                         TotalExpenses = 0.0
+                                                     })
+                                                     .ToList();
+
+            // Oblicz sumę wydatków z okresu
+            var totalExpensesForPeriod = categoryExpenses.Sum(c => c.TotalExpenses);
+
+            // Tworzenie wynikowego obiektu z danymi statystyk
+            var result = new
+            {
+                Period = period.ToString(),
+                StartDate = startDate,
+                EndDate = endDate,
+                MostSpentCategory = categoryExpensesWithDetails.FirstOrDefault(c => c.Category.CategoryId == mostSpentCategory.CategoryId),
+                MostFrequentCategory = categoryExpensesWithDetails.FirstOrDefault(c => c.Category.CategoryId == mostFrequentCategory?.CategoryId),
+                LeastSpentCategory = categoryExpensesWithDetails.FirstOrDefault(c => c.Category.CategoryId == leastSpentCategory.CategoryId),
+                CategoriesWithNoExpenses = categoriesWithNoExpenses,
+                TotalExpensesForPeriod = totalExpensesForPeriod,
+                CategoryExpensesForPeriod = categoryExpensesWithDetails
+            };
+
+            return Ok(result);
+        }
         // POST: api/Budgets
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
