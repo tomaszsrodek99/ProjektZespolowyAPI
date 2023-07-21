@@ -322,26 +322,24 @@ namespace ProjektAPI.Controllers
         // PUT: api/Budgets/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBudget(int id, Budget budget)
+        public async Task<IActionResult> PutBudget(int userId, EditableBudgetDto editableBudgetDto)
         {
-            if (id != budget.BudgetId)
-            {
-                return BadRequest();
-            }
-
-            var bu = await _repository.GetAsync(id);
+            var bu = await _repository.GetAsync(userId);
             if (bu == null)
             {
                 return NotFound();
             }
-            _mapper.Map(budget, bu);
+
+            // Only update the allowed properties from the DTO
+            bu.BudgetLimit = editableBudgetDto.BudgetLimit;
+
             try
             {
-                await _repository.UpdateAsync(budget);
+                await _repository.UpdateAsync(bu);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await BudgetExists(id))
+                if (!await BudgetExists(userId))
                 {
                     return NotFound();
                 }
@@ -351,8 +349,21 @@ namespace ProjektAPI.Controllers
                 }
             }
 
-            return NoContent();
+            // Return the edited budget response (with some fields disabled)
+            var editedBudgetResponse = new EditableBudgetDto
+            {
+                UserId = bu.UserId,
+                BudgetId = bu.BudgetId,
+                BudgetLimit = bu.BudgetLimit,
+                BudgetSpent = bu.BudgetSpent,
+                BudgetRemaining = bu.BudgetRemaining
+                // Other properties will be included in the response, but they will be read-only (disabled)
+                // You don't need to set them here since they will be mapped automatically by the framework.
+            };
+
+            return Ok(editedBudgetResponse);
         }
+
         [HttpGet]
         [Route("GetMostSpentCategoryForUser")]
         public async Task<ActionResult<object>> GetCategoriesAndExpensesForUser(int userId)
