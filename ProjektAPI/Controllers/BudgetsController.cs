@@ -207,7 +207,10 @@ namespace ProjektAPI.Controllers
 
                 var lowerBound = averageWeeklyExpenses - (averageWeeklyExpenses * 0.1);
                 var upperBound = averageWeeklyExpenses + (averageWeeklyExpenses * 0.1);
-                return Ok((averageWeeklyExpenses, lowerBound, upperBound));
+                return Ok(new
+                {
+                    averageWeeklyExpenses, lowerBound, upperBound
+                });
             }
             catch (Exception ex)
             {
@@ -230,12 +233,12 @@ namespace ProjektAPI.Controllers
 
                 var threeMonthsSum = threeMonthsExpenses.Sum(e => e.Price);
 
-                var average = threeMonthsExpenses.Count > 0 ? threeMonthsSum / threeMonthsExpenses.Count : 0;
+                var average = threeMonthsExpenses.Count > 0 ? threeMonthsSum / 3 : 0;
 
                 var lowerBound = average - (average * 0.1);
                 var upperBound = average + (average * 0.1);
 
-                return Ok((average, lowerBound, upperBound));
+                return Ok(new { average, lowerBound, upperBound });
             }
             catch (Exception ex)
             {
@@ -258,12 +261,12 @@ namespace ProjektAPI.Controllers
 
                 var threeYearsSum = threeYearsExpenses.Sum(e => e.Price);
 
-                var average = threeYearsExpenses.Count > 0 ? threeYearsSum / threeYearsExpenses.Count : 0;
+                var average = threeYearsExpenses.Count > 0 ? threeYearsSum / 3 : 0;
 
                 var lowerBound = average - (average * 0.1);
                 var upperBound = average + (average * 0.1);
 
-                return Ok((average, lowerBound, upperBound));
+                return Ok(new { average, lowerBound, upperBound });
             }
             catch (Exception ex)
             {

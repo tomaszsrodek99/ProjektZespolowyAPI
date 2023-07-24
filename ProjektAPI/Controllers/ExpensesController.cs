@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using ProjektAPI.Contracts;
 using ProjektAPI.Dtos;
 using ProjektAPI.Models;
+using ProjektAPI.Repository;
 
 namespace ProjektAPI.Controllers
 {
@@ -20,11 +21,14 @@ namespace ProjektAPI.Controllers
         private readonly IExpenseRepository _repository;
         private readonly AppDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly IBudgetRepository _budgetRepository;
 
-        public ExpensesController(IMapper mapper, IExpenseRepository expenseRepository, AppDbContext dbContext)
+
+        public ExpensesController(IMapper mapper, IExpenseRepository expenseRepository, AppDbContext dbContext, IBudgetRepository budgetRepository)
         {
             _mapper = mapper;
             _repository = expenseRepository;
+            _budgetRepository = budgetRepository; 
             _dbContext = dbContext;
         }
 
@@ -81,7 +85,12 @@ namespace ProjektAPI.Controllers
                     throw;
                 }
             }
+            double totalSpentAmount = await _repository.GetTotalSpentAmountForUser(expense.UserId);
+            var budget = await _budgetRepository.GetBudgetByUserId(expense.UserId);
+            budget.BudgetSpent = totalSpentAmount;
+            await _budgetRepository.UpdateAsync(budget);
 
+            
             return NoContent();
         }
 
@@ -99,6 +108,8 @@ namespace ProjektAPI.Controllers
             _dbContext.Update(budget);
             _dbContext.SaveChanges();
 
+
+
             return CreatedAtAction("GetExpense", new { id = expense.ExpenseId }, expense);
         }
 
@@ -112,6 +123,10 @@ namespace ProjektAPI.Controllers
                 return NotFound();
             }
             await _repository.DeleteAsync(id);
+            double totalSpentAmount = await _repository.GetTotalSpentAmountForUser(expense.UserId);
+            var budget = await _budgetRepository.GetBudgetByUserId(expense.UserId);
+            budget.BudgetSpent = totalSpentAmount;
+            await _budgetRepository.UpdateAsync(budget);
             return NoContent();
         }
 
