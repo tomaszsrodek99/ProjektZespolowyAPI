@@ -6,5 +6,6 @@ namespace ProjektAPI.Contracts
 {
     public interface IGoalRepository : IGenericRepository<Goal>
     {
+
     }
 }

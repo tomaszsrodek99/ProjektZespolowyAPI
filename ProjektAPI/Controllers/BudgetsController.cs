@@ -203,10 +203,10 @@ namespace ProjektAPI.Controllers
                                                          .Select(g => g.Sum(e => e.Price))
                                                          .ToList();
 
-                var averageWeeklyExpenses = weeklyExpenses.Count > 0 ? weeklyExpenses.Average() : 0;
+                var average = weeklyExpenses.Count > 0 ? weeklyExpenses.Average() : 0;
 
-                var lowerBound = averageWeeklyExpenses - (averageWeeklyExpenses * 0.1);
-                var upperBound = averageWeeklyExpenses + (averageWeeklyExpenses * 0.1);
+                var lowerBound = average - (average * 0.1);
+                var upperBound = average + (average * 0.1);
                 return Ok(new
                 {
                     average, lowerBound, upperBound

@@ -75,7 +75,16 @@ namespace ProjektAPI.Controllers
 
             return NoContent();
         }
+        [HttpGet("user/{userId}")]
+        // GET: api/Goals/user/1
+        public async Task<ActionResult<IEnumerable<GoalDto>>> GetGoalsByUserId(int userId)
+        {
+            var goals = await _goalRepository.GetAllAsync(); // Assuming this method returns all goals
+            var userGoals = goals.Where(g => g.UserId == userId);
+            var records = _mapper.Map<List<GoalDto>>(userGoals);
 
+            return Ok(records);
+        }
         [HttpPost]
         // POST: api/Goals
         public async Task<ActionResult<Goal>> PostGoal(GoalDto goalDto)

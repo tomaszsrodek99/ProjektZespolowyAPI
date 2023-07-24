@@ -8,7 +8,7 @@ namespace ProjektAPI.Dtos
         [Required]
         public int UserId { get; set; }
         [Required]
-        [RegularExpression(@"^[A-Z][A-Za-z ]*$")]
+        
         public string Name { get; set; } = null!;
         public string? Icon { get; set; }
         [Required]
