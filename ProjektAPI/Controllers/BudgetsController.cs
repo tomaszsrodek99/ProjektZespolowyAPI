@@ -209,7 +209,7 @@ namespace ProjektAPI.Controllers
                 var upperBound = averageWeeklyExpenses + (averageWeeklyExpenses * 0.1);
                 return Ok(new
                 {
-                    averageWeeklyExpenses, lowerBound, upperBound
+                    average, lowerBound, upperBound
                 });
             }
             catch (Exception ex)
