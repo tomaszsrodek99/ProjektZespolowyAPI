@@ -24,5 +24,6 @@ namespace ProjektAPI.Models
         public int BudgetId { get; set; }
         public virtual Budget Budget { get; set; }
         public virtual ICollection<Category>? Categories { get; set; }
+        public virtual ICollection<Goal>? Goals { get; set; }
     }
 }

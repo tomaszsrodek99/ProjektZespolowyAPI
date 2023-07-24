@@ -11,6 +11,7 @@ namespace ProjektAPI.Configuration
             CreateMap<Models.Expense, Dtos.ExpenseDto>().ReverseMap();
             CreateMap<Models.User, Dtos.UserDto>().ReverseMap();
             CreateMap<Models.Budget, Dtos.EditableBudgetDto>().ReverseMap();
+            CreateMap<Models.Goal, Dtos.GoalDto>().ReverseMap();
         }
     }
 }

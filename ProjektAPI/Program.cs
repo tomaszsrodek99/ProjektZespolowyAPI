@@ -71,6 +71,7 @@ namespace ProjektAPI
             builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IBudgetRepository, BudgetRepository>();
+            builder.Services.AddScoped<IGoalRepository, GoalRepository>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

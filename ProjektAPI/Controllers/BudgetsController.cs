@@ -187,31 +187,32 @@ namespace ProjektAPI.Controllers
         }
 
         [HttpGet]
-        [Route("GetGetNextWeekForecast")]
+        [Route("GetNextWeekForecast")]
         public async Task<ActionResult<double>> GetNextWeekForecast(int userId)
         {
             try
             {
-                // Załóżmy, że expenses to lista obiektów reprezentujących istniejące wydatki użytkownika.
                 var expenses = await _repository.GetTotalExpensesForUser(userId);
 
-                // Oblicz datę początkową i końcową poprzedniego tygodnia.
-                var endDate = DateTime.Today.AddDays(-1); // Dzień przed dzisiejszym.
-                var startDate = endDate.AddDays(-7); // Data początkowa to 7 dni przed datą końcową.
+                var endDate = DateTime.Today.AddDays(-1); 
+                var startDate = endDate.AddDays(-28); 
 
-                // Wybierz wydatki, które mieszczą się w zakresie poprzedniego tygodnia.
-                var previousWeekExpenses = expenses.Where(e => e.Date >= startDate && e.Date <= endDate);
+                var lastFourWeeksExpenses = expenses.Where(e => e.Date >= startDate && e.Date <= endDate).ToList();
 
-                // Oblicz średnią wartość wydatków z poprzedniego tygodnia.
-                var previousWeekAverage = previousWeekExpenses.Average(e => e.Price);
+                var weeklyExpenses = lastFourWeeksExpenses.GroupBy(e => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(e.Date, CalendarWeekRule.FirstDay, DayOfWeek.Monday))
+                                                         .Select(g => g.Sum(e => e.Price))
+                                                         .ToList();
 
-                return Ok(previousWeekAverage);
+                var averageWeeklyExpenses = weeklyExpenses.Count > 0 ? weeklyExpenses.Average() : 0;
+
+                var lowerBound = averageWeeklyExpenses - (averageWeeklyExpenses * 0.1);
+                var upperBound = averageWeeklyExpenses + (averageWeeklyExpenses * 0.1);
+                return Ok((averageWeeklyExpenses, lowerBound, upperBound));
             }
             catch (Exception ex)
             {
-                // Obsługa wyjątku lub braku danych
                 return Ok("Missing data");
-            }
+            }         
         }
 
         [HttpGet]
@@ -220,24 +221,24 @@ namespace ProjektAPI.Controllers
         {
             try
             {
-                // Załóżmy, że expenses to lista obiektów reprezentujących istniejące wydatki użytkownika.
                 var expenses = await _repository.GetTotalExpensesForUser(userId);
 
-                // Oblicz datę początkową i końcową ostatniego miesiąca.
-                var endDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).AddDays(-1); // Dzień przed pierwszym dniem bieżącego miesiąca.
-                var startDate = endDate.AddDays(-endDate.Day + 1); // Data początkowa to pierwszy dzień ostatniego miesiąca.
+                var endDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).AddDays(-1);
+                var startDate = endDate.AddMonths(-2).AddDays(1);
 
-                // Wybierz wydatki, które mieszczą się w zakresie ostatniego miesiąca.
-                var lastMonthExpenses = expenses.Where(e => e.Date >= startDate && e.Date <= endDate);
+                var threeMonthsExpenses = expenses.Where(e => e.Date >= startDate && e.Date <= endDate).ToList();
 
-                // Oblicz średnią wartość wydatków z ostatniego miesiąca.
-                var lastMonthAverage = lastMonthExpenses.Average(e => e.Price);
+                var threeMonthsSum = threeMonthsExpenses.Sum(e => e.Price);
 
-                return Ok(lastMonthAverage);
+                var average = threeMonthsExpenses.Count > 0 ? threeMonthsSum / threeMonthsExpenses.Count : 0;
+
+                var lowerBound = average - (average * 0.1);
+                var upperBound = average + (average * 0.1);
+
+                return Ok((average, lowerBound, upperBound));
             }
             catch (Exception ex)
             {
-                // Obsługa wyjątku lub braku danych
                 return Ok("Missing data");
             }
         }
@@ -248,20 +249,21 @@ namespace ProjektAPI.Controllers
         {
             try
             {
-                // Załóżmy, że expenses to lista obiektów reprezentujących istniejące wydatki użytkownika.
                 var expenses = await _repository.GetTotalExpensesForUser(userId);
 
-                // Oblicz datę początkową i końcową dla aktualnego roku.
-                var currentYearStartDate = new DateTime(DateTime.Today.Year, 1, 1);
-                var currentYearEndDate = DateTime.Today;
+                var endDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).AddDays(-1);
+                var startDate = endDate.AddYears(-2).AddDays(1);
 
-                // Wybierz wydatki, które mieszczą się w zakresie aktualnego roku.
-                var currentYearExpenses = expenses.Where(e => e.Date >= currentYearStartDate && e.Date <= currentYearEndDate);
+                var threeYearsExpenses = expenses.Where(e => e.Date >= startDate && e.Date <= endDate).ToList();
 
-                // Oblicz średnią wartość wydatków z aktualnego roku.
-                var annualExpenseAverage = currentYearExpenses.Average(e => e.Price);
+                var threeYearsSum = threeYearsExpenses.Sum(e => e.Price);
 
-                return Ok(annualExpenseAverage);
+                var average = threeYearsExpenses.Count > 0 ? threeYearsSum / threeYearsExpenses.Count : 0;
+
+                var lowerBound = average - (average * 0.1);
+                var upperBound = average + (average * 0.1);
+
+                return Ok((average, lowerBound, upperBound));
             }
             catch (Exception ex)
             {
