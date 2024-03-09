@@ -1,6 +1,5 @@
 # ProjektZespolowyAPI
 ExpenseTracker is a powerful mobile application designed to help users effectively manage their personal budgets. With our app, users can easily track their expenses, set budget limits, and monitor progress towards their financial goals. What sets ExpenseTracker apart from other similar programs is its flexibility, allowing users to create custom expense categories tailored to their individual needs.
-https://budgetbuddy2.azurewebsites.net/swagger/index.html
 
 # Tech Stack:
 * MSSQL database - Used for storing user data securely.
